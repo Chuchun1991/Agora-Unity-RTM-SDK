@@ -18,9 +18,7 @@ namespace agora_rtm {
 			Dispose(false);
 		}
 
-		/// <summary>
-		/// Releases all resources used by the RtmCallManager instance.
-		/// </summary>
+	
 		private void Release() {
 			if (_rtmCallManagerPtr == IntPtr.Zero)
 			{
@@ -35,10 +33,12 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Allows the caller to send a call invitation to the callee.
+		/// 发送呼叫邀请给被叫。
 		/// </summary>
-		/// <param name="invitation">An LocalCallInvitation object.</param>
-		/// <returns></returns>
+		/// <param name="invitation">一个 \ref agora_rtm.LocalInvitation "LocalInvitation" 对象。</param>
+		/// <returns>
+		///  - 0: 方法调用成功。
+		///  - ≠0: 方法调用失败。详见 #INVITATION_API_CALL_ERR_CODE 。
 		public int SendLocalInvitation(LocalInvitation invitation) {
 			if (_rtmCallManagerPtr == IntPtr.Zero)
 			{
@@ -49,12 +49,12 @@ namespace agora_rtm {
 		}
 		
 		/// <summary>
-		/// Allows the callee to accept an incoming call invitation.
+		/// 接受来自主叫的呼叫邀请。
 		/// </summary>
-		/// <param name="invitation">An RemoteCallInvitation object.</param>
+		/// <param name="invitation">一个 \ref agora_rtm.RemoteInvitation "RemoteInvitation" 对象。</param>
 		/// <returns>
-		/// 0: Success.
-		/// <0: Failure. 	
+		///  - 0: 方法调用成功。
+		///  - ≠0: 方法调用失败。详见 #INVITATION_API_CALL_ERR_CODE 。
 		/// </returns>
 		public int AcceptRemoteInvitation(RemoteInvitation invitation) {
 			if (_rtmCallManagerPtr == IntPtr.Zero) 
@@ -68,10 +68,10 @@ namespace agora_rtm {
 		/// <summary>
 		/// Allows the callee to decline an incoming call invitation.
 		/// </summary>
-		/// <param name="invitation">An RemoteCallInvitation object.</param>
+		/// <param name="invitation">一个 \ref agora_rtm.RemoteInvitation "RemoteInvitation" 对象。</param>
 		/// <returns>
-		/// 0: Success.
-		/// <0: Failure.
+		///  - 0: 方法调用成功。
+		///  - ≠0: 方法调用失败。详见 #INVITATION_API_CALL_ERR_CODE 。
 		/// </returns>
 		public int RefuseRemoteInvitation(RemoteInvitation invitation) {
 			if (_rtmCallManagerPtr == IntPtr.Zero) 
@@ -83,11 +83,14 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Allows the caller to cancel an outgoing call invitation.
+		/// 取消给被叫的呼叫邀请。
 		/// </summary>
-		/// <param name="invitation">An LocalCallInvitation object.</param>
-		/// <returns></returns>
-		public int CancelLocalInvitation(RemoteInvitation invitation) {
+		/// <param name="invitation">一个 \ref agora_rtm.LocalInvitation "LocalInvitation" 对象。</param>
+		/// <returns>
+	    ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #INVITATION_API_CALL_ERR_CODE 。
+		/// </returns>
+		public int CancelLocalInvitation(LocalInvitation invitation) {
 			if (_rtmCallManagerPtr == IntPtr.Zero) 
 			{
 				Debug.LogError("_rtmCallManagerPtr is null");
@@ -97,11 +100,11 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Creates an LocalCallInvitation object.
+		/// 创建一个呼叫邀请实例。
 		/// </summary>
-		/// <param name="calleeId">	The Callee's user ID.</param>
+		/// <param name="calleeId">	被叫的用户 ID。</param>
 		/// <returns>
-		/// An ILocalCallInvitation object.
+		/// 一个 \ref agora_rtm.LocalInvitation "LocalInvitation" 对象。
 		/// </returns>
 		public LocalInvitation CreateLocalCallInvitation(string calleeId) {
 			if (_rtmCallManagerPtr == IntPtr.Zero) 
@@ -111,7 +114,11 @@ namespace agora_rtm {
 			}
 			return new LocalInvitation(rtm_call_manager_createLocalCallInvitation(_rtmCallManagerPtr, calleeId));
 		}
+        
 
+        /// <summary>
+		/// 释放 #RtmCallManager 实例使用的所有资源。
+		/// </summary>
 		public void Dispose() {
 			Dispose(true);
 			GC.SuppressFinalize(this);

@@ -20,7 +20,7 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Allows the callee to get the User ID of the caller.
+		/// 供被叫获取主叫的用户 ID。
 		/// </summary>
 		/// <returns>
 		/// CallId
@@ -40,9 +40,9 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Allows the callee to get the call invitation content set by the caller.
+		/// 供被叫获取主叫通过 \ref agora_rtm.LocalInvitation.SetContent "SetContent" 方法设置的呼叫邀请内容。
 		/// </summary>
-		/// <returns>Return the content.</returns>
+		/// <returns>The content.</returns>
 		public string GetContent() {
 			if (_remoteInvitationPrt == IntPtr.Zero)
 			{
@@ -58,9 +58,9 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Allows the callee to set a response to the call invitation.
+		/// 供被叫设置呼叫邀请响应。
 		/// </summary>
-		/// <param name="response">The callee's response to the call invitation. The response must not exceed 8 KB in length if encoded in UTF-8.</param>
+		/// <param name="response">邀请响应。若编码为 UTF-8， `response` 的对应的字节长度不得超过 8 KB。</param>
 		public void SetResponse(string response) {
 			if (_remoteInvitationPrt == IntPtr.Zero)
 			{
@@ -71,9 +71,8 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Allows the callee to get his/her response to the incoming call invitation.
+		/// 供被叫获取自己通过 #SetResponse 方法设置的呼叫邀请响应。
 		/// </summary>
-		/// <returns></returns>
 		public string GetResponse() {
 			if (_remoteInvitationPrt == IntPtr.Zero)
 			{
@@ -89,9 +88,8 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Gets the channel ID.
+		/// 获得频道 ID。
 		/// </summary>
-		/// <returns></returns>
 		public string GetChannelId() {
 			if (_remoteInvitationPrt == IntPtr.Zero)
 			{
@@ -107,9 +105,9 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Allows the callee to get the state of the incoming call invitation.
+		/// 供被叫获取呼叫邀请状态。
 		/// </summary>
-		/// <returns>The state of the incoming call invitation See: REMOTE_INVITATION_STATE.</returns>
+		/// <returns>呼叫邀请状态。详见 \ref agora_rtm.REMOTE_INVITATION_STATE "REMOTE_INVITATION_STATE"。</returns>
 		public REMOTE_INVITATION_STATE GetState() {
 			if (_remoteInvitationPrt == IntPtr.Zero)
 			{
@@ -123,9 +121,7 @@ namespace agora_rtm {
 			return _remoteInvitationPrt;
 		}
 
-		/// <summary>
-		/// Releases all resources used by the IRemoteCallInvitation instance.
-		/// </summary>
+
 		private void Release() {
 			if (_remoteInvitationPrt == IntPtr.Zero)
 				return;
@@ -135,7 +131,7 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Release unmanaged resources.
+		/// 释放当前 #RemoteInvitation 实例使用的所有资源。
 		/// </summary>
 		public void Dispose() {
 			Dispose(true);

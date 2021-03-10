@@ -5,7 +5,7 @@ namespace agora_rtm {
     public enum COMMON_ERR_CODE {
           ERROR_NULL_PTR = -7
     }
-
+    /// @cond not-for-doc
     public enum INIT_ERR_CODE {
           
           /**
@@ -33,515 +33,530 @@ namespace agora_rtm {
            */
           INIT_ERR_INVALID_ARGUMENT = 4,
     };
-     
+    /// @endcond  
       
     /**
-     @brief Error codes related to login.
+     @brief 登录相关错误码。
      */
     public enum LOGIN_ERR_CODE {
       
       /**
-       0: The method call succeeds, or login succeeds. 
+       0: 方法调用成功或登录成功。
        */
       LOGIN_ERR_OK = 0,
         
       /**
-       1: Login fails. The reason is unknown.
+       1: 登录失败。原因未知。
        */
       LOGIN_ERR_UNKNOWN = 1,
       
       /**
-       2: Login is rejected by the server.
+       2: 登录被服务器拒绝。
        */
       LOGIN_ERR_REJECTED = 2, // Occurs when not initialized or server reject
         
       /**
-       3: Invalid login argument.
+       3: 无效的登录参数。
        */
       LOGIN_ERR_INVALID_ARGUMENT = 3,
         
       /**
-       4: The App ID is invalid.
+       4: 无效的 App ID。
        */
       LOGIN_ERR_INVALID_APP_ID = 4,
         
       /**
-       5: The token is invalid.
+       5: 无效的 Token。
        */
       LOGIN_ERR_INVALID_TOKEN = 5,
        
       /**
-       6: The token has expired, and hence login is rejected.
+       6: Token 已过期，登录被拒绝。
        */
       LOGIN_ERR_TOKEN_EXPIRED = 6,
        
       /**
-       7: Unauthorized login.
+       7: **预留错误码** 未经授权的登录。
        */
       LOGIN_ERR_NOT_AUTHORIZED = 7,
        
       /**
-       8: The user has already logged in or is logging in the Agora RTM system, or the user has not called the \ref agora::rtm::IRtmService::logout "logout" method to leave the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" state.
+       8: 用户已登录，或正在登录 Agora RTM 系统，或未调用 \ref agora_rtm.RtmClient.Logout "Logout" 方法退出 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态。
        */
       LOGIN_ERR_ALREADY_LOGGED_IN = 8,
        
       /**
-       9: The login times out. The current timeout is set as six seconds. You need to log in again.
+       9: 登录超时。目前的超时设置为 10 秒。你需要再次登录。
        */
       LOGIN_ERR_TIMEOUT = 9,
        
       /**
-       10: The call frequency of the \ref agora::rtm::IRtmService::login "login" method exceeds the limit of two queries per second.
+       10: 登录过于频繁。超过 2 次每秒的上限。
        */
       LOGIN_ERR_TOO_OFTEN = 10,
-        
+
+      /// @cond  
       /**
        101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
       */
       LOGIN_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
     };
       
     /**
-     @brief Error codes related to logout.
+     @brief 登出相关错误码。
      */
     public enum LOGOUT_ERR_CODE {
        
       /**
-       0: The method call succeeds, or logout succeeds.
+       0: 登出成功。没有错误。
        */
       LOGOUT_ERR_OK = 0,
       
       /**
-       1: **RESERVED FOR FUTURE USE**
+       1: **预留错误码**
        */
       LOGOUT_ERR_REJECTED = 1,
-        
+
+      /// @cond 
       /**
        101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
        */
       LOGOUT_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
         
       /**
-       102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before the user logs out of the Agora RTM system.
+       102: 登出 Agora RTM 系统前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
        */
       LOGOUT_ERR_USER_NOT_LOGGED_IN = 102,
     };
 
     /**
-     @brief Error codes related to renewing the RTM Token.
+     @brief 更新 RTM Token 相关错误码。
      */
     public enum RENEW_TOKEN_ERR_CODE {
         
       /**
-       0: The method call succeeds, or the renewing operation succeeds. 
+       0: 方法调用成功，或更新 Token 成功。
        */
       RENEW_TOKEN_ERR_OK = 0,
         
       /**
-       1: Common failure. The user fails to renew the token.
+       1: 通用错误。更新 Token 失败。
        */
       RENEW_TOKEN_ERR_FAILURE = 1,
  
       /**
-       2: The method call fails. The argument is invalid. 
+       2: 无效的输入参数。
        */
       RENEW_TOKEN_ERR_INVALID_ARGUMENT = 2,
         
       /**
-       3: **RESERVED FOR FUTURE USE**
+       3: **预留错误码**
        */
       RENEW_TOKEN_ERR_REJECTED = 3,
  
       /**
-       4: The method call frequency exceeds the limit of two queries per second.
+       4: 方法调用过于频繁。超过 2 次每秒的上限。
        */
       RENEW_TOKEN_ERR_TOO_OFTEN = 4,
   
       /**
-       5: The token has expired.
+       5: 输入 Token 已过期。
        */
       RENEW_TOKEN_ERR_TOKEN_EXPIRED = 5,
   
       /**
-       6: The token is invalid.
+       6: 输入 Token 无效。
        */
       RENEW_TOKEN_ERR_INVALID_TOKEN = 6,
-         
+      
+      /// @cond
       /**
        101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
        */
       RENEW_TOKEN_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
         
       /**
-       102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before renewing the token.
+       102: 更新 Token 前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
        */
       RENEW_TOKEN_ERR_USER_NOT_LOGGED_IN = 102,
     };
  
     /**
-     @brief Connection states between the SDK and the Agora RTM system.
+     @brief SDK 与 Agora RTM 系统的连接状态。
      */
     public enum CONNECTION_STATE {
         
       /**
-       1: The initial state. The SDK is disconnected from the Agora RTM system.
+       1: 初始状态。SDK 未连接到 Agora RTM 系统。
        
-       When the user calls the \ref agora::rtm::IRtmService::login "login" method, the SDK starts to log in the Agora RTM system, triggers the \ref agora::rtm::IRtmServiceEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback, and switches to the \ref agora::rtm::CONNECTION_STATE_CONNECTING "CONNECTION_STATE_CONNECTING" state.
+       App 调用方法 \ref agora_rtm.RtmClient.Login "Login" 时, SDK 开始登录 Agora RTM 系统，触发回调 \ref agora_rtm.RtmClientEventHandler.OnConnectionStateChangedHandler "OnConnectionStateChangedHandler" 并切换到 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_CONNECTING "CONNECTION_STATE_CONNECTING" 状态。
        */
       CONNECTION_STATE_DISCONNECTED = 1,
         
       /**
-       2: The SDK is logging in the Agora RTM system.
+       2: SDK 正在登录 Agora RTM 系统。
 
-       - If the user successfully logs in the Agora RTM system and receives the \ref agora::rtm::IRtmServiceEventHandler::onLoginSuccess "onLoginSuccess" callback, the SDK triggers the \ref agora::rtm::IRtmServiceEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback and switches to the \ref agora::rtm::CONNECTION_STATE_CONNECTED "CONNECTION_STATE_CONNECTED" state.
-       - If the user fails to login the Agora RTM system and receives the \ref agora::rtm::IRtmServiceEventHandler::onLoginFailure "onLoginFailure" callback, the SDK triggers the \ref agora::rtm::IRtmServiceEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback and switches to the \ref agora::rtm::CONNECTION_STATE_DISCONNECTED "CONNECTION_STATE_DISCONNECTED" state.
+       - 方法调用成功时，SDK 会触发回调 \ref agora_rtm.RtmClientEventHandler.OnLoginFailureHandler "OnLoginFailureHandler" ，并切换到 \ref agora_rtm.RtmClientEventHandler.OnConnectionStateChangedHandler "OnConnectionStateChangedHandler" callback and switches to the \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_DISCONNECTED "CONNECTION_STATE_DISCONNECTED" 状态。
        */
       CONNECTION_STATE_CONNECTING = 2,
         
       /**
-       3: The SDK has logged in the Agora RTM system.
+       3: SDK 已登录 Agora RTM 系统。
 
-       - If the connection state between the SDK and the Agora RTM system is interrupted because of network issues, the SDK triggers the \ref agora::rtm::IRtmServiceEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback and switches to the \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
-       - If the login is banned by the server because, for example, another instance logs in the Agora RTM system with the same user ID, the \ref agora::rtm::IRtmServiceEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback is triggered, and the SDK is switched to the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" state.
-       - If the user calls the \ref agora::rtm::IRtmService::logout "logout" method to log out of the Agora RTM system and receives the \ref agora::rtm::IRtmServiceEventHandler::onLogout "onLogout" callback (error code = `LOGOUT_ERR_OK`), the SDK triggers the \ref agora::rtm::IRtmServiceEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback and switches to the \ref agora::rtm::CONNECTION_STATE_DISCONNECTED "CONNECTION_STATE_DISCONNECTED" state.
+       - 如果 SDK 与 Agora RTM 系统的连接由于网络问题中断，SDK 会触发回调 \ref agora_rtm.RtmClientEventHandler.OnConnectionStateChangedHandler "OnConnectionStateChangedHandler" ，并切换到 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" 状态。
+       - 如果 SDK 因为相同 ID 已在其他实例或设备中登录等原因被服务器禁止登录，会触发回调 \ref agora_rtm.RtmClientEventHandler.OnConnectionStateChangedHandler "OnConnectionStateChangedHandler" 并切换到 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态。
+       - 如果 App 调用方法 \ref agora_rtm.RtmClient.Logout "Logout" ，SDK 登出 Agora RTM 系统成功，会触发回调 \ref agora_rtm.RtmClientEventHandler.OnLogoutHandler "OnLogoutHandler" 并切换到 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_DISCONNECTED "CONNECTION_STATE_DISCONNECTED" 状态。
        */
       CONNECTION_STATE_CONNECTED = 3,
         
       /**
-       4: The connection state between the SDK and the Agora RTM system is interrupted due to network issues, and the SDK keeps re-logging in the Agora RTM system.
+       4: SDK 与 Agora RTM 系统连接由于网络原因出现中断，SDK 正在尝试自动重连 Agora RTM 系统。
 
-       - If the SDK successfully re-logs in the Agora RTM system, the SDK triggers the \ref agora::rtm::IRtmServiceEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback and switches to the \ref agora::rtm::CONNECTION_STATE_CONNECTED "CONNECTION_STATE_CONNECTED" state. The SDK automatically adds the user back to the channels he or she was in when the connection was interrupted, and synchronizes the local user's attributes with the server. 
-       - If the SDK cannot re-log in the Agora RTM system, it stays in the \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state and keeps re-logging in the system.
+       - 如果 SDK 重新登录 Agora RTM 系统成功，会触发回调 \ref agora_rtm.RtmClientEventHandler.OnConnectionStateChangedHandler "OnConnectionStateChangedHandler"，并切换到 \ref agora_rtm.RtmClientEventHandler.CONNECTION_STATE_CONNECTED "CONNECTION_STATE_CONNECTED" 状态。SDK 会自动加入中断时用户所在频道，并自动将本地用户属性同步到服务端。
+       - 如果 SDK 重新登录 Agora RTM 系统失败，会保持 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING " 状态并自动重连 Agora RTM 系统。
        */
       CONNECTION_STATE_RECONNECTING = 4,
         
       /**
-       5: The SDK gives up logging in the Agora RTM system, mainly because another instance has logged in the Agora RTM system with the same user ID.
-       
-       You must call the \ref agora::rtm::IRtmService::logout "logout" method to leave this state before calling the \ref agora::rtm::IRtmService::login "login" method again.
+       5: SDK 停止登录 Agora RTM 系统。
+       可能原因：另一实例已经以同一用户 ID 登录 Agora RTM 系统。
+       请先调用 \ref agora_rtm.RtmClient.Logout "Logout" ，再视情况调用 \ref agora_rtm.RtmClient.Login "Login" 方法重新登录 Agora RTM 系统。
        */
       CONNECTION_STATE_ABORTED = 5,
     };
 
     /**
-     @brief Reasons for a connection state change.
+     @brief 连接状态改变原因。
      */
     public enum CONNECTION_CHANGE_REASON {
         
       /**
-       1: The SDK is logging in the Agora RTM system.
+       1: SDK 正在登录 Agora RTM 系统。
        */
       CONNECTION_CHANGE_REASON_LOGIN = 1,
         
       /**
-       2: The SDK has logged in the Agora RTM system.
+       2: SDK 登录 Agora RTM 系统成功。
        */
       CONNECTION_CHANGE_REASON_LOGIN_SUCCESS = 2,
         
       /**
-       3: The SDK fails to log in the Agora RTM system.
+       3: SDK 登录 Agora RTM 系统失败。
        */
       CONNECTION_CHANGE_REASON_LOGIN_FAILURE = 3,
         
       /**
-       4: The SDK fails to log in the Agora RTM system within six seconds and gives up.
+       4: SDK 无法登录 Agora RTM 系统超过 6 秒，停止登录。可能原因：用户正处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态或 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" 状态。
        */
       CONNECTION_CHANGE_REASON_LOGIN_TIMEOUT = 4,
         
       /**
-       5: The connection between the SDK and the Agora RTM system is interrupted. The system defines an interruption when the SDK loses connection with the Agora RTM system for network reasons and cannot recover in four seconds.
+       5: SDK 与 Agora RTM 系统的连接被中断。
        */
       CONNECTION_CHANGE_REASON_INTERRUPTED = 5,
         
       /**
-       6: The user has called the \ref agora::rtm::IRtmService::logout "logout" method to log out of the Agora RTM system.
+       6: 用户调用了 \ref agora_rtm.RtmClient.Logout "Logout" 方法登出 Agora RTM 系统。
        */
       CONNECTION_CHANGE_REASON_LOGOUT = 6,
         
       /**
-       7: The SDK login to the Agora RTM system is banned by Agora.
+       7: SDK 被服务器禁止登录 Agora RTM 系统。
        */
       CONNECTION_CHANGE_REASON_BANNED_BY_SERVER = 7,
         
       /**
-       8: Another user is logging in the Agora RTM system with the same User ID.
+       8: 另一个用户正以相同的 User ID 登陆 Agora RTM 系统。
        */
       CONNECTION_CHANGE_REASON_REMOTE_LOGIN = 8,
     };
 
     /**
-     @brief Error codes related to sending a peer-to-peer message.
+     @brief 点对点消息发送相关错误码。
      */
     public enum PEER_MESSAGE_ERR_CODE {
         
       /**
-       0: The method call succeeds, or the specified user receives the peer-to-peer message.
+       0: 方法调用成功，或对端已成功收到点对点消息。
        */
       PEER_MESSAGE_ERR_OK = 0,
 
       /**
-       1: The sender fails to send the peer-to-peer message.
+       1: 发送点对点消息失败。
        */
       PEER_MESSAGE_ERR_FAILURE = 1,
         
       /**
-       2: A timeout occurs when sending the peer-to-peer message. The current timeout is set as 10 seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+       2: 发送点对点消息超时。当前的超时时间设置为 10 秒。可能原因：用户正处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态或 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state。
        */
       PEER_MESSAGE_ERR_SENT_TIMEOUT = 2,
         
       /**
-       3: The specified user is offline and does not receive this peer-to-peer message.
+       3: 对方不在线，发出的点对点消息未被收到。
        */
       PEER_MESSAGE_ERR_PEER_UNREACHABLE = 3,
         
      /**
-      4: The receiver is offline and does not receive this offline peer-to-peer message, but the server has cached it and will re-send it once he/she is back online.
+      4: 对方不在线，发出的离线点对点消息未被收到。但是服务器已经保存这条消息并将在用户上线后重新发送。
       */
       PEER_MESSAGE_ERR_CACHED_BY_SERVER = 4,
         
      /**
-      5: The method call frequency exceeds the limit of (RTM SDK for Windows C++) 180 calls every three seconds or (RTM SDK for Linux C++) 1500 calls every three seconds, with channel and peer messages taken together..
+      5: 发送消息（点对点消息和频道消息一并计算在内）超过每 3 秒 180 次的上限。
       */
       PEER_MESSAGE_ERR_TOO_OFTEN = 5,
         
      /**
-      6: The user ID is invalid.
+      6: 用户 ID 无效。
       */
       PEER_MESSAGE_ERR_INVALID_USERID = 6,
         
      /**
-      7: The message is null or exceeds 32 KB in length.       
+      7: 消息为 null 或超出 32 KB 的长度限制。
 	  */
       PEER_MESSAGE_ERR_INVALID_MESSAGE = 7,
       
       /**
-       8: The message receiver‘s SDK is of an earlier version and hence cannot recognize this message.
+       8: 消息接收方的 SDK 版本较老，无法识别本消息。
        */
       PEER_MESSAGE_ERR_IMCOMPATIBLE_MESSAGE = 8,
-        
+     
+     /// @cond   
      /**
       101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
       */
       PEER_MESSAGE_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
     
      /**
-      102: The sender does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before sending the peer-to-peer message.
+      102: 发送点对点消息前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
       */
       PEER_MESSAGE_ERR_USER_NOT_LOGGED_IN = 102,
     };
 
     /**
-     @brief Error codes related to joining a channel.
+     @brief 加入频道相关错误码。
      */
     public enum JOIN_CHANNEL_ERR {
         
       /**
-       0: The method call succeeds, or the user joins the channel successfully.
+       0: 方法调用成功，或用户加入频道成功。
        */
       JOIN_CHANNEL_ERR_OK = 0,
 
       /**
-       1: Common failure. The user fails to join the channel.
+       1: 通用错误。用户加入频道失败。
        */
       JOIN_CHANNEL_ERR_FAILURE = 1,
         
       /**
-       2: For v1.0.0 and earlier, the SDK returns this error when you try to join a channel that you have already joined. The SDK does not return this error code after v1.0.0.
+       2: 不会返回此错误码。
        */
       JOIN_CHANNEL_ERR_REJECTED = 2, // Usually occurs when the user is already in the channel
         
       /**
-       3: The user fails to join the channel because the argument is invalid.
+       3: 用户加入频道失败。输入参数无效。
        */
       JOIN_CHANNEL_ERR_INVALID_ARGUMENT = 3,
         
       /**
-       4: A timeout occurs when joining the channel. The current timeout is set as five seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+       4: 用户加入频道超时。目前的超时设置为 5 秒。可能原因：用户正处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态或 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING " 状态。
        */
       JOIN_CHANNEL_TIMEOUT = 4,
         
      /**
-      5: The number of the RTM channels you are in exceeds the limit of 20.
+      5: 同时加入的频道数超过 20 上限。
       */
       JOIN_CHANNEL_ERR_EXCEED_LIMIT = 5,
         
      /**
-      6: The user is joining or has joined the channel.
+      6: 用户正在加入频道或已成功加入频道。
       */
       JOIN_CHANNEL_ERR_ALREADY_JOINED = 6,
         
       /**
-      7: The method call frequency exceeds 50 queries every three seconds.
+      7: 方法调用超过每 3 秒 50 次的上限。
       */
       JOIN_CHANNEL_ERR_TOO_OFTEN = 7,
 
       /**
-       8: The frequency of joining the same channel exceeds two times every five seconds.
+       8: 加入相同频道的频率超过每 5 秒 2 次的上限。
        */
       JOIN_CHANNEL_ERR_JOIN_SAME_CHANNEL_TOO_OFTEN = 8,
-        
+
+     /// @cond   
      /**
       101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
       */
       JOIN_CHANNEL_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
         
      /**
-      102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before joining the channel.
+      102: 用户加入频道前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
       */
       JOIN_CHANNEL_ERR_USER_NOT_LOGGED_IN = 102,
     };
 
     /**
-     @brief Error codes related to leaving a channel.
+     @brief 离开频道相关错误码。
      */
     public enum LEAVE_CHANNEL_ERR {
       
       /**
-       0: The method call succeeds, or the user leaves the channel successfully.
+       0: 方法调用成功，或用户离开频道成功。
        */
       LEAVE_CHANNEL_ERR_OK = 0,
         
       /**
-       1: Common failure. The user fails to leave the channel.
+       1: 通用错误。用户离开频道失败。
        */
       LEAVE_CHANNEL_ERR_FAILURE = 1,
         
       /**
-       2: **RESERVED FOR FUTURE USE**
+       2: **预留错误码**
        */
       LEAVE_CHANNEL_ERR_REJECTED = 2,
         
       /**
-       3: The user is not in the channel.
+       3: 用户已不在频道内。
        */
       LEAVE_CHANNEL_ERR_NOT_IN_CHANNEL = 3,
-        
+
+      /// @cond  
       /**
        101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
        */
       LEAVE_CHANNEL_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
     
       /**
-       102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before calling the \ref agora::rtm::IChannel::leave "leave" method.
+       102: 用户在调用 \ref agora_rtm.RtmChannel.Leave "Leave" 方法前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
        */
       LEAVE_CHANNEL_ERR_USER_NOT_LOGGED_IN = 102,
     };
       
     /**
-     @brief Reasons why a user leaves the channel.
+     @brief 离开频道原因。
      */
     public enum LEAVE_CHANNEL_REASON {
         
       /**
-       1: The user has quit the call.
+       1: 用户已主动调用 \ref agora_rtm.RtmChannel.Leave "Leave" 方法离开频道。
        */
       LEAVE_CHANNEL_REASON_QUIT = 1,
         
       /**
-       2: The user is banned by the server.
+       2: 用户被服务器踢出。可能因为另一个实例用了相同的 uid 登录 Agora RTM 系统。
        */
       LEAVE_CHANNEL_REASON_KICKED = 2,
     };
 
     /**
-     @brief Error codes related to sending a channel message.
+     @brief 频道消息发送相关错误码。
      */
     public enum CHANNEL_MESSAGE_ERR_CODE {
         
       /**
-       0: The method call succeeds, or the server receives the channel message.
+       0: 方法调用成功，或服务端已收到频道消息。
        */
       CHANNEL_MESSAGE_ERR_OK = 0,
 
       /**
-       1: Common failure. The user fails to send the channel message.
+       1: 通用错误。发送频道消息失败。
        */
       CHANNEL_MESSAGE_ERR_FAILURE = 1,
              
       /**
-       2: The SDK does not receive a response from the server in 10 seconds. The current timeout is set as 10 seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+       2: 服务器未收到频道消息或者 SDK 未在 10 秒内收到服务器响应。当前的超时设置为 10 秒。可能原因：用户正处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态或 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING " 状态。
        */
       CHANNEL_MESSAGE_ERR_SENT_TIMEOUT = 2,
         
       /**
-       3: The method call frequency exceeds the limit of (RTM SDK for Windows C++) 180 calls every three seconds or (RTM SDK for Linux C++) 1500 calls every three seconds, with channel and peer messages taken together..
-       */
+       3: 发送消息（点对点消息和频道消息一并计算在内）超过每 3 秒 180 次的上限。
       CHANNEL_MESSAGE_ERR_TOO_OFTEN = 3,
+       */
         
       /**
-       4: The message is null or exceeds 32 KB in length.
+       4: 消息为 null 或超出 32 KB 的长度限制。
        */
       CHANNEL_MESSAGE_ERR_INVALID_MESSAGE = 4,
-        
+
+      /// @cond  
       /**
        101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
        */
       CHANNEL_MESSAGE_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
     
       /**
-       102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before sending out a channel message.
+       102: 发送频道消息前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
        */
       CHANNEL_MESSAGE_ERR_USER_NOT_LOGGED_IN = 102,
     };
 
     /**
-     @brief Error codes related to retrieving a channel member list.
+     @brief 获取所在频道成员列表相关错误码。
      */
     public enum GET_MEMBERS_ERR {
   
       /**
-       0: The method call succeeds, or the operation succeeds.
+       0: 方法调用成功，或获取所在频道成员列表成功。
        */
       GET_MEMBERS_ERR_OK = 0,
     
       /**
-       1: Common failure. The user fails to retrieve a member list of the channel.
+       1: 通用错误。获取所在频道成员列表失败。
        */
       GET_MEMBERS_ERR_FAILURE = 1,
         
       /**
-       2: **RESERVED FOR FUTURE USE**
+       2: **预留错误码**
        */
       GET_MEMBERS_ERR_REJECTED = 2,
         
       /**
-       3: A timeout occurs when retrieving a member list of the channel. The current timeout is set as five seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+       3: 获取所在频道成员列表超时。目前的超时设置为 5 秒。可能原因：用户正处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态或 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING " 状态。
        */
       GET_MEMBERS_ERR_TIMEOUT = 3,
         
       /**
-       4: The method call frequency exceeds the limit of five queries every two seconds.
+       4: 方法调用频率超过 5 次每 2 秒的上限。
        */
       GET_MEMBERS_ERR_TOO_OFTEN = 4,
     
       /**
-       5: The user is not in channel.
+       5: 用户不在频道内。
        */
       GET_MEMBERS_ERR_NOT_IN_CHANNEL = 5,
-        
+
+      /// @cond  
       /**
        101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
        */
       GET_MEMBERS_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
         
       /**
-       102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before retrieving a member list.
+       102: 获取所在频道成员列表前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
        */
       GET_MEMBERS_ERR_USER_NOT_LOGGED_IN = 102,
     };
 
     /**
-     @brief Error codes related to querying the online status of the specified peers.
+     @brief 查询用户在线状态相关的错误码。
      */
     public enum QUERY_PEERS_ONLINE_STATUS_ERR {
       
       /**
-       0: The method call succeeds, or the operation succeeds.
+       0: 方法调用成功，或查询用户在线状态成功。
        */
       QUERY_PEERS_ONLINE_STATUS_ERR_OK = 0,
 
       /**
-       1: Common failure. The user fails to query the online status of the specified peers.
+       1: 通用错误。查询用户在线状态失败。
        */
       QUERY_PEERS_ONLINE_STATUS_ERR_FAILURE = 1,
         
@@ -551,156 +566,162 @@ namespace agora_rtm {
       QUERY_PEERS_ONLINE_STATUS_ERR_INVALID_ARGUMENT = 2,
         
       /**
-       3: **RESERVED FOR FUTURE USE**
+       3: **无效的输入参数。**
        */
       QUERY_PEERS_ONLINE_STATUS_ERR_REJECTED = 3,
         
       /**
-       4: The SDK fails to receive a response from the server in 10 seconds. The current timeout is set as 10 seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+       4: 服务器响应超时。当前的超时设置为 10 秒。可能原因：用户正处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态或 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING " 状态。
        */
       QUERY_PEERS_ONLINE_STATUS_ERR_TIMEOUT = 4,
         
       /**
-       5: The method call frequency exceeds the limit of (RTM SDK for Windows C++) 10 calls every five seconds or (RTM SDK for Linux C++) 100 calls every five seconds.
+       5: 方法调用过于频繁。超过每 5 秒 10 次的限制。
        */
       QUERY_PEERS_ONLINE_STATUS_ERR_TOO_OFTEN = 5,
-        
+
+      /// @cond  
       /**
        101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
        */
       QUERY_PEERS_ONLINE_STATUS_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
     
       /**
-       102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before querying the online status.
+       102: 查询指定用户在线状态前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
        */
       QUERY_PEERS_ONLINE_STATUS_ERR_USER_NOT_LOGGED_IN = 102,
     };
 
     /**
-     @brief The online states of a peer.
+     @brief 用户在线状态类型。
      */
     public enum PEER_ONLINE_STATE {
 
       /**
-       0: The peer is online (the SDK has logged in the Agora RTM system).
+       0: 用户在线。
        */
       PEER_ONLINE_STATE_ONLINE = 0,
 
       /**
-       1: The peer is temporarily unreachable (the server has not received a packet from the SDK for more than six seconds).
+       1: 连接状态不稳定（服务器连续 6 秒未收到来自 SDK 的数据包）。
        */
       PEER_ONLINE_STATE_UNREACHABLE = 1,
 
       /**
-       2: The peer is offline (the SDK has not logged in the Agora RTM system, or it has logged out of the system, or the server has not received a packet from the SDK for more than 30 seconds).
+       2: 用户不在线（用户未登录或已登出 Agora RTM 系统，或服务器连续 30 秒未收到来自 SDK 的数据包）。
        */
       PEER_ONLINE_STATE_OFFLINE = 2,
     };
       
     /**
-     @brief Subscription types.
+     @brief 订阅类型。
      */
     public enum PEER_SUBSCRIPTION_OPTION {
       /**
-       0: Takes out a subscription to the online status of specified users.
+       0: 订阅指定用户的在线状态。
        */
       PEER_SUBSCRIPTION_OPTION_ONLINE_STATUS = 0,
     };
 
     /**
-     @brief Error codes related to subscribing to or unsubscribing from the status of specified peers.
+     @brief 订阅或退订指定用户状态相关错误码。
      */
     public enum PEER_SUBSCRIPTION_STATUS_ERR {
 
       /**
-       0: The method call succeeds, or the operation succeeds.
+       0: 方法调用成功，或订阅退订操作成功。
        */
       PEER_SUBSCRIPTION_STATUS_ERR_OK = 0,
 
       /**
-       1: Common failure. The user fails to subscribe to or unsubscribe from the status of the specified peers.
+       1: 通用错误。订阅或退订操作失败。
        */
       PEER_SUBSCRIPTION_STATUS_ERR_FAILURE = 1,
 
       /**
-       2: The method call fails. The argument is invalid.
+       2: 无效的输入参数。
        */
       PEER_SUBSCRIPTION_STATUS_ERR_INVALID_ARGUMENT = 2,
 
       /**
-       3: **RESERVED FOR FUTURE USE**
+       3: **预留错误码**
        */
       PEER_SUBSCRIPTION_STATUS_ERR_REJECTED = 3,
 
       /**
-       4: The SDK fails to receive a response from the server within 10 seconds. The current timeout is set as 10 seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+       4: 服务器响应超时。当前的超时设置为 10 秒。可能原因：用户正处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态或 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING " 状态。
        */
       PEER_SUBSCRIPTION_STATUS_ERR_TIMEOUT = 4,
 
       /**
-       5: The method call frequency exceeds the limit of 10 queries every five seconds.
+       5: 方法调用过于频繁。超过 10 次每 5 秒的限制。
        */
       PEER_SUBSCRIPTION_STATUS_ERR_TOO_OFTEN = 5,
 
       /**
-       6: The number of peers, to whom you subscribe, exceeds the limit of 512.
+       6: 订阅人数超过 512 人的上限。
        */
       PEER_SUBSCRIPTION_STATUS_ERR_OVERFLOW = 6,
-
+      
+      /// @cond
       /**
        101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
        */
       PEER_SUBSCRIPTION_STATUS_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
 
       /**
-       102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+       102: 订阅或退订操作前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
        */
       PEER_SUBSCRIPTION_STATUS_ERR_USER_NOT_LOGGED_IN = 102,
     };
 
     /**
-     @brief Error codes related to getting a list of the peers by subscription option type.
+     @brief 根据订阅类型获取被订阅用户列表相关的错误码。
      */
     public enum QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR {
 
       /**
-       0: The method call succeeds, or the operation succeeds.
+       0: 方法调用成功，或根据订阅类型获取被订阅用户列表成功。
        */
       QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_OK = 0,
 
       /**
-       1: Common failure. The user fails to query peers by subscription option type.
+       1: 通用错误。根据订阅类型获取被订阅用户列表失败。
        */
       QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_FAILURE = 1,
 
       /**
-       2: The SDK fails to receive a response from the server within 5 seconds. The current timeout is set as 5 seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+       2: 服务器响应超时。当前的超时设置为 5 秒。可能原因：用户正处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态或 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING " 状态。
        */
       QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_TIMEOUT = 2,
 
       /**
-       3: The method call frequency exceeds the limit of 10 queries every five seconds.
+       3: 方法调用过于频繁。超过 10 次每 5 秒的限制。
        */
       QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_TOO_OFTEN = 3,
-
+      
+      /// @cond
       /**
        101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
        */
       QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_NOT_INITIALIZED = 101,
+      /// @endcond
 
       /**
-       102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before the query.
+       102: 根据订阅类型获取被订阅用户列表前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
        */
       QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_USER_NOT_LOGGED_IN = 102,
     };
       
     /**
-     @brief Error codes related to attrubute operations.
+     @brief 属性相关操作错误码。
      */
     public enum ATTRIBUTE_OPERATION_ERR {
         
         /**
-         0: The method call succeeds, or the attribute operation succeeds.
+         0: 方法调用成功，或属性操作成功。
          */
         ATTRIBUTE_OPERATION_ERR_OK = 0,
         
@@ -710,540 +731,567 @@ namespace agora_rtm {
         ATTRIBUTE_OPERATION_ERR_NOT_READY = 1,
         
         /**
-         2: Common failure. The attribute operation fails.
+         2: 通用错误。属性相关操作失败。
          */
         ATTRIBUTE_OPERATION_ERR_FAILURE = 2,
         
         /**
-         3: The argument you put for this attribute operation is invalid. For example, you cannot set a user or channel attribute as "".
+         3: 无效的输入参数。比如，你不可以把用户属性或频道属性设为 ""。
          */
         ATTRIBUTE_OPERATION_ERR_INVALID_ARGUMENT = 3,
         
         /**
-         4: The attribute size exceeds the limit.
+         4: 本次操作后，用户属性或频道属性超过上限。
          
-         - For user attribute operations: The user's overall attribute size would exceed the limit of 16 KB, one of the user's attributes would exceeds 8 KB in size, or the number of this user's attributes would exceed 32 after this attribute operation.
-         - For channel attribute operations: The channel's overall attribute size would exceed the limit of 32 KB, one of the channel attributes would exceed 8 KB in size, or the number of this channel's attributes would exceed 32 after this attribute operation.
+         - 用户属性操作：在本次属性操作后，用户属性总大小超过 16 KB 长度限制，或单条用户属性超过 8 KB 长度限制，或用户属性个数超过 32 个的条目上限。
+         - 频道属性操作：在本次属性操作后，频道属性总大小超过 32 KB 长度限制，或单条频道属性超过 8 KB 长度限制，或频道属性个数超过 32 个的条目上限。
          */
         ATTRIBUTE_OPERATION_ERR_SIZE_OVERFLOW = 4,
         
         /**
-         5: The method call frequency exceeds the limit.
+         5: 方法调用频率超过限制。
          
-         - For \ref agora::rtm::IRtmService::setLocalUserAttributes "setLocalUserAttributes", \ref agora::rtm::IRtmService::addOrUpdateLocalUserAttributes "addOrUpdateLocalUserAttributes", \ref agora::rtm::IRtmService::deleteLocalUserAttributesByKeys "deleteLocalUserAttributesByKeys" and \ref agora::rtm::IRtmService::clearLocalUserAttributes "clearLocalUserAttributes" taken together: the maximum call frequency is (RTM SDK for Windows C++) 10 calls every five seconds or (RTM SDK for Linux C++) 100 calls every five seconds.
-         - For \ref agora::rtm::IRtmService::getUserAttributes "getUserAttributes" and \ref agora::rtm::IRtmService::getUserAttributesByKeys "getUserAttributesByKeys" taken together, the maximum call frequency is (RTM SDK for Windows C++) 40 calls every five seconds or (RTM SDK for Linux C++) 400 calls every five seconds.
-         - For \ref agora::rtm::IRtmService::setChannelAttributes "setChannelAttributes", \ref agora::rtm::IRtmService::addOrUpdateChannelAttributes "addOrUpdateChannelAttributes", \ref agora::rtm::IRtmService::deleteChannelAttributesByKeys "deleteChannelAttributesByKeys" and \ref agora::rtm::IRtmService::clearChannelAttributes "clearChannelAttributes" taken together: the maximum call frequency is (RTM SDK for Windows C++) 10 calls every five seconds or (RTM SDK for Linux C++) 100 calls every five seconds.
-         - For \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" and \ref agora::rtm::IRtmService::getChannelAttributesByKeys "getChannelAttributesByKeys" taken together, the maximum call frequency is (RTM SDK for Windows C++) 10 calls every five seconds or (RTM SDK for Linux C++) 400 calls every five seconds.
+         - \ref agora_rtm.RtmClient.GetUserAttributes "GetUserAttributes" 、 \ref agora_rtm.RtmClient.GetUserAttributesByKeys "GetUserAttributesByKeys" 一并计算在内：调用频率上限为每 5 秒 10 次
+         - \ref agora_rtm.RtmClient.SetChannelAttributes "SetChannelAttributes" 、 \ref agora_rtm.RtmClient.DeleteChannelAttributesByKeys "DeleteChannelAttributesByKeys" 和 \ref agora_rtm.RtmClient.ClearChannelAttributes "ClearChannelAttributes" 一并计算在内：调用频率上限为每 5 秒 40 次。
+         - \ref agora_rtm.RtmClient.GetChannelAttributes "GetChannelAttributes" 、 \ref agora_rtm.RtmClient.GetChannelAttributesByKeys "GetChannelAttributesByKeys" 一并计算在内：调用频率上限为每 5 秒 10 次。
          */
         ATTRIBUTE_OPERATION_ERR_TOO_OFTEN = 5,
         
         /**
-         6: The specified user is not found, either because the user is offline or because the user does not exist.
+         6: 未找到指定用户。该用户或者处于离线状态或者并不存在。
          */
         ATTRIBUTE_OPERATION_ERR_USER_NOT_FOUND = 6,
         
         /**
-         7: A timeout occurs during the attribute operation. The current timeout is set as five seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+         7: 属性操作超时。当前的超时设定为 5 秒。可能原因：用户正处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态或 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING " 状态。
          */
         ATTRIBUTE_OPERATION_ERR_TIMEOUT = 7,
         
+        /// @cond
         /**
          101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
          */
         ATTRIBUTE_OPERATION_ERR_NOT_INITIALIZED = 101,
+        /// @endcond
         
         /**
-         102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before the attribute operation.
+         102: 执行属性相关操作前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
          */
         ATTRIBUTE_OPERATION_ERR_USER_NOT_LOGGED_IN = 102,
     };
      
      /**
-      @brief Error codes related to retrieving the channel member count of specified channels.
+      @brief 查询单个或多个指定频道成员人数的相关错误码。
       */
     public enum GET_CHANNEL_MEMBER_COUNT_ERR_CODE {
          
         /**
-         0: The method call succeeds, or the operation succeeds. 
+         0: 方法调用成功，或获取指定频道成员人数成功。
          */
         GET_CHANNEL_MEMBER_COUNT_ERR_OK = 0,
          
         /**
-         1: Unknown common failure. 
+         1: 通用未知错误。
          */
         GET_CHANNEL_MEMBER_COUNT_ERR_FAILURE = 1,
         
         /**
-         2: One or several of your channel IDs is invalid, or @p channelCount &lt; 0.
+         2: 你的频道 ID 无效或者 `channelCount` < 0.
          */
         GET_CHANNEL_MEMBER_COUNT_ERR_INVALID_ARGUMENT = 2,
         
         /**
-         3: The method call frequency exceeds the limit of one query per second.
+         3: 方法调用过于频繁。超过 1 次每秒的限制。
          */
         GET_CHANNEL_MEMBER_COUNT_ERR_TOO_OFTEN = 3,
          
         /**
-         4: A timeout occurs during this operation. The current timeout is set as five seconds.
+         4: 服务器响应超时。当前的超时设定为 5 秒。
          */
         GET_CHANNEL_MEMBER_COUNT_ERR_TIMEOUT = 4,
         
         /**
-         5:@p channelCount is greater than 32. 
+         5: `channelCount` 大于 32。
          */
         GET_CHANNEL_MEMBER_COUNT_ERR_EXCEED_LIMIT = 5,
-         
+
+        /// @cond 
         /**
          101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
          */
         GET_CHANNEL_MEMBER_COUNT_ERR_NOT_INITIALIZED = 101,
+        /// @endcond
         
         /**
-         102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+         102: 本次操作前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
          */
         GET_CHANNEL_MEMBER_COUNT_ERR_USER_NOT_LOGGED_IN = 102,
     };
       
       /**
-       @brief Error codes related to downloading a file or image.
+       @brief 文件或图片下载相关错误码。
        */
     public enum DOWNLOAD_MEDIA_ERR_CODE {
           /**
-           0: The method call succeeds, or the operation succeeds.
+           0: 方法调用成功，或下载操作成功。
            */
           DOWNLOAD_MEDIA_ERR_OK = 0,
           
           /**
-           1: Unknown common failure. Check whether you have write access.
+           1: 通用未知错误。请检查你是否有写权限。
            */
           DOWNLOAD_MEDIA_ERR_FAILURE = 1,
           
           /**
-           2: An argument you put is invalid. For example, `mediaId` is in the wrong format or `filePath` is set as `null`.
+           2: 输入参数错误。比如 `mediaId` 格式错误或 `filePath` 为空。
            */
           DOWNLOAD_MEDIA_ERR_INVALID_ARGUMENT = 2,
           /**
-           3: A timeout occurs. The current timeout is set as 120 seconds. The SDK assumes that a timeout occurs if it has not detected any file transmission between the SDK and the file server for 120 seconds.
+           3: 服务器响应超时。当前如果 SDK 与文件服务器之间没有文件传输达 120 秒时，SDK 认定下载超时。
            */
           DOWNLOAD_MEDIA_ERR_TIMEOUT = 3,
           
           /**
-           4: The file or image to download does not exist, either because the media ID you input is incorrect or because the validity of the media ID has expired. 
+           4: 要下载的文件或图片不存在，可能因为 `mediaId` 输入错误，也可能因为 `mediaId` 已过期。
            */
           DOWNLOAD_MEDIA_ERR_NOT_EXIST = 4,
           
           /**
-           5: You have exceeded the upper limit for file download. You can initiate a maximum of nine file download or upload tasks at the same time (download and upload tasks count together).
+           5: 文件或图片同时下载数超过 9 个的上限（上传任务和下载任务一并计算）。
            */
           DOWNLOAD_MEDIA_ERR_CONCURRENCY_LIMIT_EXCEEDED = 5,
 
           /**
-           6: The file or image download task is aborted for either of the following reasons:
+           6: 文件或图片下载任务因如下原因中途退出：
 
-           - The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" state. 
-           - The user has cancelled the download task.
+           - 下载方处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态。
+           - 下载方取消了文件或图片下载。
            */
           DOWNLOAD_MEDIA_ERR_INTERRUPTED = 6,
           
+          /// @cond
           /**
            101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
            */
           DOWNLOAD_MEDIA_ERR_NOT_INITIALIZED = 101,
+          /// @endcond
           
           /**
-           102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+           102: 本次操作前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
            */
           DOWNLOAD_MEDIA_ERR_NOT_LOGGED_IN = 102,
     };
       
       
       /**
-       @brief Error codes related to uploading a file or image.
+       @brief 文件或图片上传相关错误码。
        */
     public enum UPLOAD_MEDIA_ERR_CODE {
           /**
-           0: The method call succeeds, or the operation succeeds.
+           0: 方法调用成功，或上传操作成功。
            */
           UPLOAD_MEDIA_ERR_OK = 0,
           
           /**
-           1: Unknown common failure. Please check whether the file exists and whether you can access the file.
+           1: 通用未知错误。请检查文件是否存在或是否有权限。
            */
           UPLOAD_MEDIA_ERR_FAILURE = 1,
           
           /**
-           2: The argument you put is invalid. For example, `mediaId` is in the wrong format. 
+           2: 输入参数错误。比如 `mediaId` 格式错误。
            */
           UPLOAD_MEDIA_ERR_INVALID_ARGUMENT = 2,
           
           /**
-           3: A timeout occurs. The current timeout is set as 120 seconds. The SDK assumes that a timeout occurs if it has not detected any file transmission between the SDK and the file server for 120 seconds.
+           3: 服务器响应超时。当前如果 SDK 与文件服务器之间没有文件传输达 120 秒时，SDK 认定上传超时。
            */
           UPLOAD_MEDIA_ERR_TIMEOUT = 3,
           
           /**
-           4: The size of the file or image to upload exceeds 30 MB.
+           4: 上传文件或图片大小超过 30 MB 上限。
            */
           UPLOAD_MEDIA_ERR_SIZE_OVERFLOW = 4,
           /**
-           5: You have exceeded the upper limit for file upload. You can initiate a maximum of nine file upload or download tasks at the same time (upload and download tasks count together).
+           5: 文件或图片同时上传数超过 9 个的上限(上传任务和下载任务可一并计算)。
            */
           UPLOAD_MEDIA_ERR_CONCURRENCY_LIMIT_EXCEEDED = 5,
           /**
-           6: The file or image upload task is aborted for either of the following reasons:
+           6: 文件或图片上传任务因如下原因中途退出：
            
-           - The user in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" state. 
-           - The user has cancelled the upload task.
+           - 上传方处于 \ref agora_rtm.CONNECTION_STATE.CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" 状态。
+           - 上传方取消了文件或图片上传。
            */
           UPLOAD_MEDIA_ERR_INTERRUPTED = 6,
           
+          /// @cond
           /**
            101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
-           */
+          */
           UPLOAD_MEDIA_ERR_NOT_INITIALIZED = 101,
-          
+          /// @endcond
+        
           /**
-           102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+          102: 本次操作前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用未成功。
            */
           UPLOAD_MEDIA_ERR_NOT_LOGGED_IN = 102,
       };
       
       /**
-       @brief Error codes related to cancelling a download task or cancelling an upload task.
+       @brief 取消上传或取消下载相关的错误码。
        */
       public enum CANCEL_MEDIA_ERR_CODE {
           /**
-           0: The method call succeeds, or the operation succeeds.
+           0: 方法调用成功，或取消操作成功。
            */
           CANCEL_MEDIA_ERR_OK = 0,
           
           /**
-           1: Unknown common failure.
+           1: 通用未知错误。
            */
           CANCEL_MEDIA_ERR_FAILURE = 1,
           
           /**
-           2: The task to cancel does not exist. You can only cancel an ongoing download or upload task. If the download or upload task completes, the corresponding @p requestId is no longer valid. 
+           2: 待取消任务不存在。你只能取消正在进行中的上传或下载任务。如果上传或下载任务已完成，对应的 `requestId` 将不再有效。
            */
           CANCEL_MEDIA_ERR_NOT_EXIST = 2,
           
+          /// @cond
           /**
            101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
            */
           CANCEL_MEDIA_ERR_NOT_INITIALIZED = 101,
+          /// @endcond
           
           /**
-           102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+           102: 本次操作前未调用 \ref agora_rtm.RtmClient.Login "Login" 方法或者 \ref agora_rtm.RtmClient.Login "Login" 方法调用失败。
            */
           CANCEL_MEDIA_ERR_NOT_LOGGED_IN = 102,
       };
-      
+        
+       /**
+       @brief 消息类型。
+       */
       	public enum MESSAGE_TYPE {
         
         /**
-        0: The message type is undefined.
+        0: 消息类型未定义。
         */
         MESSAGE_TYPE_UNDEFINED = 0,
 
         /**
-        1: A text message.
+        1: 文本消息。
         */
         MESSAGE_TYPE_TEXT = 1,
         
         /**
-        2: A raw message. A raw message is a binary message whose size does not exceed 32 KB. 
+        2: 自定义二进制消息。
         */
         MESSAGE_TYPE_RAW = 2,
         
         /**
-         3: A file message. The size of a file message must be less than 32 KB.
+         3: 文件消息。大小不得超过 32 KB。
          */
         MESSAGE_TYPE_FILE = 3,
         
         /**
-         4: An image message. The size of an image message must be less than 32 KB.
+         4: 图片消息。大小不得超过 32 KB。
          */
         MESSAGE_TYPE_IMAGE = 4,
     };
 
-        /**
-     @brief The data structure holding an RTM user and the user's online status.
+     /**
+     @brief 指定用户的在线状态。
      */
     public struct PeerOnlineStatus
     {
         
       /**
-       The user ID of the peer.
+       指定用户的用户 ID。
        */
       public string peerId;
         
       /**
-       @deprecated Deprecated as of v1.2.0. Use \ref agora::rtm::PeerOnlineStatus::onlineState "onlineState" instead.
+       @deprecated 请改用变量 \ref agora_rtm.PeerOnlineStatus.onlineState "onlineState"。
        
-       The online status of the peer.
+       指定用户的在线状态。
        
-       - true: The user is online (the user has logged in the Agora RTM system).
-       - false: The user is offline (the user has logged out of the Agora RTM system, has not logged in, or has failed to logged in).
+       - true: 在线（用户已登录 Agora RTM 系统）。
+       - false: 不在线（用户未登录或未成功登录 Agora RTM 系统，或已登出）。
        */
       public bool isOnline;
 
       /**
-       The online state of the peer. See #PEER_ONLINE_STATE.
+       指定用户的在线状态。详见 \ref agora_rtm.PEER_ONLINE_STATE "PEER_ONLINE_STATE"。
        
        @note
-       - The server will never return the `unreachable` state, if you <i>query</i> the online status of specified peers (\ref agora::rtm::IRtmService::queryPeersOnlineStatus "queryPeersOnlineStatus"). See also: \ref agora::rtm::IRtmServiceEventHandler::onQueryPeersOnlineStatusResult "onQueryPeersOnlineStatusResult".
-       - The server may return the `unreachable` state, if you <i>subscribe to</i> the online status of specified peers (\ref agora::rtm::IRtmService::subscribePeersOnlineStatus "subscribePeersOnlineStatus"). See also: \ref agora::rtm::IRtmServiceEventHandler::onPeersOnlineStatusChanged "onPeersOnlineStatusChanged".
+       - 如果你是查询指定用户的在线状态（ \ref agora_rtm.RtmClient.QueryPeersOnlineStatus "QueryPeersOnlineStatus" ），我们的后台服务器并不会返回 `unreachable` 状态。详见 \ref agora_rtm.RtmClientEventHandler.OnQueryPeersOnlineStatusResultHandler "OnQueryPeersOnlineStatusResultHandler" 回调。
+       - 如果你是订阅指定用户的在线状态（ \ref agora_rtm.RtmClient.SubscribePeersOnlineStatus "SubscribePeersOnlineStatus" ），我们的后台服务器则可能返回 `unreachable` 状态。详见 \ref agora_rtm.RtmClientEventHandler.OnPeersOnlineStatusChangedHandler "OnPeersOnlineStatusChangedHandler" 回调。
        */
       public PEER_ONLINE_STATE onlineState;
     };
 
-        /**
-     @brief A data structure representing the upload ratio or download ratio.
+     /**
+     @brief 上传或下载文件/图片比例。
      */
     public struct MediaOperationProgress
     {
         /**
-         The total size of the file or image being loaded.
+         文件或图片的总大小。
          */
         public Int64 totalSize;
         /**
-         The size of the loaded part of the file or image. 
+         已下载或已上传的文件或图片大小。
          */
         public Int64 currentSize;
     };
 
-     /**
-      @brief Data structure holding channel attribute-specific options.
-      */
+    
     public struct ChannelAttributeOptions{  
         /**
-         Indicates whether or not to notify all channel members of a channel attribute change.
+         是否通知所有频道成员本次频道属性变更。
          
-         @note This flag is valid only within the current method call.
+         @note 该标志位仅对本次 API 调用有效。
          
-         - true: Notify all channel members of a channel attribute change.
-         - false: (Default) Do not notify all channel members of a channel attribute change.
+         - true: 通知所有频道成员本次频道属性变更。
+         - false: (默认) 不通知所有频道成员本次频道属性变更。
          */
         public bool enableNotificationToChannelMembers;
     };
 
 
     /**
-     @brief A data structure holding a user attribute key and its value.
+     @brief 用户属性
      */
     public struct RtmAttribute
     {
     
         /**
-         User attribute name. Must be visible characters and not exceed 32 Bytes.
+         用户属性的属性名。必须为可见字符且长度不得超过 32 字节。
          */
         public string key;
   
         /**
-         Value of the user attribute. Must not exceed 8 KB.
+         用户属性的属性值。长度不得超过 8 KB。
          */
         public string value;
     };
 
-        /**
-     @brief The data structure holding a channel ID and the current channel member count.
+     /**
+     @brief 通道成员计数。
      */  
     public struct ChannelMemberCount
     {
       /**
-       The ID of the channel.
+       频道 ID（频道名）。
        */
       public string channelId;
-       // count of channel, 0 if channel not found.
       /**
-       The current member count of the channel.
+       频道最新成员人数。
 
-       @note @p count is 0, if a channel with the specified @p channelId is not found. 
+       @note 如果不能找到指定的 `channelId` ，返回的 `count` 将显示为 0。
        */ 
       public int count;
     };
 
   /**
-     @brief <b>RETURNED TO THE CALLER.</b> States of an outgoing call invitation.
+     @brief 返回给主叫的呼叫邀请状态码。
      */
     public enum LOCAL_INVITATION_STATE {
         
       /**
-       0: <b>RETURNED TO THE CALLER.</b> The initial state of a call invitation (idle).
+       0: 返回给主叫的呼叫邀请状态码：初始状态。
        */
       LOCAL_INVITATION_STATE_IDLE = 0,
         
       /**
-       1: <b>RETURNED TO THE CALLER.</b> The call invitation is sent to the callee.
+       1: 返回给主叫的呼叫邀请状态码：呼叫邀请已发送给被叫。
        */
       LOCAL_INVITATION_STATE_SENT_TO_REMOTE = 1,
         
       /**
-       2: <b>RETURNED TO THE CALLER.</b> The call invitation is received by the callee.
+       2: 返回给主叫的呼叫邀请状态码：被叫已收到呼叫邀请。
        */
       LOCAL_INVITATION_STATE_RECEIVED_BY_REMOTE = 2,
         
       /**
-       3: <b>RETURNED TO THE CALLER.</b> The call invitation is accepted by the callee.
+       3: 返回给主叫的呼叫邀请状态码：被叫已接受呼叫邀请。
        */
       LOCAL_INVITATION_STATE_ACCEPTED_BY_REMOTE = 3,
         
       /**
-       4: <b>RETURNED TO THE CALLER.</b> The call invitation is declined by the callee.
+       4: 返回给主叫的呼叫邀请状态码：被叫已拒绝呼叫邀请。
        */
       LOCAL_INVITATION_STATE_REFUSED_BY_REMOTE = 4,
         
       /**
-       5: <b>RETURNED TO THE CALLER.</b> You have canceled the call invitation.
+       5: 返回给主叫的呼叫邀请状态码：已成功取消呼叫邀请。
        */
       LOCAL_INVITATION_STATE_CANCELED = 5,
         
       /**
-       6: <b>RETURNED TO THE CALLER.</b> The call invitation fails.
+       6: 返回给主叫的呼叫邀请状态码：呼叫邀请过程失败。
        */
       LOCAL_INVITATION_STATE_FAILURE = 6,
     };
 
     /**
-     @brief <b>RETURNED TO THE CALLEE.</b> States of an incoming call invitation.
+     @brief 返回给被叫的呼叫邀请状态码。
      */
     public enum REMOTE_INVITATION_STATE {
         
       /**
-       0: <b>RETURNED TO THE CALLEE.</b> The initial state of a call invitation (idle).
+       0: 返回给被叫的呼叫邀请状态码：被叫发出的邀请的初始状态。
        */
       REMOTE_INVITATION_STATE_IDLE = 0,
         
       /**
-       1: <b>RETURNED TO THE CALLEE.</b> A call invitation from a remote caller is received.
+       1: 返回给被叫的呼叫邀请状态码：收到了来自主叫的呼叫邀请。
        */
       REMOTE_INVITATION_STATE_INVITATION_RECEIVED = 1,
         
       /**
-       2: <b>RETURNED TO THE CALLEE.</b> The message is sent to the caller that the call invitation is accepted.
+       2: 返回给被叫的呼叫邀请状态码：接受呼叫邀请的消息已成功发回给主叫。
        */
       REMOTE_INVITATION_STATE_ACCEPT_SENT_TO_LOCAL = 2,
         
       /**
-       3: <b>RETURNED TO THE CALLEE.</b> You have declined the call invitation.
+       3: 返回给被叫的呼叫邀请状态码：已拒绝来自主叫的呼叫邀请。
        */
       REMOTE_INVITATION_STATE_REFUSED = 3,
         
       /**
-       4: <b>RETURNED TO THE CALLEE.</b> You have accepted the call invitation.
+       4: 返回给被叫的呼叫邀请状态码：已接受来自主叫的呼叫邀请。
        */
       REMOTE_INVITATION_STATE_ACCEPTED = 4,
         
       /**
-       5: <b>RETURNED TO THE CALLEE.</b> The call invitation is canceled by the remote caller.
+       5: 返回给被叫的呼叫邀请状态码：主叫已取消呼叫邀请。
        */
       REMOTE_INVITATION_STATE_CANCELED = 5,
         
       /**
-       6: <b>RETURNED TO THE CALLEE.</b> The call invitation fails.
+       6: 返回给被叫的呼叫邀请状态码：呼叫邀请过程失败。
        */
       REMOTE_INVITATION_STATE_FAILURE = 6,
     };
 
     /**
-     @brief <b>RETURNED TO THE CALLER.</b> Error codes of an outgoing call invitation.
+     @brief 返回给主叫的呼叫邀请错误码。
      */
     public enum LOCAL_INVITATION_ERR_CODE {
         
       /**
-       0: <b>RETURNED TO THE CALLER.</b> The outgoing invitation succeeds.
+       0: 返回给主叫的呼叫邀请错误码：呼叫邀请成功。
        */
       LOCAL_INVITATION_ERR_OK = 0,
         
       /**
-       1: <b>RETURNED TO THE CALLER.</b> The callee is offline.
+       1: 返回给主叫的呼叫邀请错误码：被叫不在线。
         
        The SDK performs the following:
-       - Keeps resending the call invitation to the callee, if the callee is offline.
-       - Returns this error code, if the callee is still offline 30 seconds since the call invitation is sent.
+       - SDK 会在被叫不在线时不断重发呼叫邀请。
+       - 若消息发送 30 秒后被叫仍未上线，SDK 会返回此错误码。
        */
       LOCAL_INVITATION_ERR_PEER_OFFLINE = 1,
         
       /**
-       2: <b>RETURNED TO THE CALLER.</b> The callee is online but has not ACKed to the call invitation 30 seconds since it is sent.
+       2: 返回给主叫的呼叫邀请错误码：被叫在呼叫邀请发出后 30 秒无 ACK 响应。
        */
       LOCAL_INVITATION_ERR_PEER_NO_RESPONSE = 2,
         
       /**
-       3: <b>RETURNED TO THE CALLER. SAVED FOR FUTURE USE.</b> The call invitation expires 60 seconds since it is sent, if the callee ACKs to the call invitation but neither the caller or callee takes any further action (cancel, accpet, or decline it).
+       3: 返回给主叫的呼叫邀请错误码：呼叫邀请过期。被叫 ACK 响应呼叫邀请后 60 秒呼叫邀请未被取消、接受、拒绝，则呼叫邀请过期。
        */
       LOCAL_INVITATION_ERR_INVITATION_EXPIRE = 3,
         
       /**
-       4: <b>RETURNED TO THE CALLER.</b> The caller is not logged in.
+       4: 返回给主叫的呼叫邀请错误码：主叫未登录。
        */
       LOCAL_INVITATION_ERR_NOT_LOGGEDIN = 4,
     };
       
     /**
-     @brief <b>RETURNED TO THE CALLEE.</b> Error codes of an incoming call invitation.
+     @brief 返回给被叫的呼叫邀请错误码
      */
     public enum REMOTE_INVITATION_ERR_CODE {
         
       /**
-       0: <b>RETURNED TO THE CALLEE.</b> The incoming calll invitation succeeds.
+       0: 返回给被叫的呼叫邀请错误码：呼叫邀请成功。
        */
       REMOTE_INVITATION_ERR_OK = 0,
         
       /**
-       1: <b>RETURNED TO THE CALLEE.</b> The call invitation received by the callee fails: the callee is not online.
+       1: 返回给被叫的呼叫邀请错误码：被叫不在线，呼叫邀请失败。
        */
       REMOTE_INVITATION_ERR_PEER_OFFLINE = 1,
         
       /**
-       2: <b>RETURNED TO THE CALLEE.</b> The call invitation received by callee fails: The callee does not ACK within a set time after the callee accepts the call invitation. This is usually a result of a network interruption.
+       2: 返回给被叫的呼叫邀请错误码：被叫接受呼叫邀请后未收到主叫的 ACK 响应导致呼叫邀请失败，一般由于网络中断造成。
        */
       REMOTE_INVITATION_ERR_ACCEPT_FAILURE = 2,
         
       /**
-       3: <b>RETURNED TO THE CALLEE.</b> The call invitation expires 60 seconds since it is sent, if the callee ACKs to the call invitation but neither the caller or callee takes any further action (cancel, accpet, or decline it).
+       3: 返回给被叫的呼叫邀请错误码：呼叫邀请过期。被叫 ACK 响应呼叫邀请后 60 秒呼叫邀请未被取消、接受、拒绝，则呼叫邀请过期。
        */
       REMOTE_INVITATION_ERR_INVITATION_EXPIRE = 3,
     };
 
     /**
-     @brief Error codes of the call invitation methods.
+     @brief 呼叫邀请的相关 API 调用的错误码。
      */
     public enum INVITATION_API_CALL_ERR_CODE {
         
       /**
-       0: The method call succeeds.
+       0: 呼叫邀请相关 API 调用成功。
        */
       INVITATION_API_CALL_ERR_OK = 0,
         
       /**
-       1: The method call fails. The argument is invalid, for example, the value of the @p content parameter exceeds 8K bytes.
+       1: 呼叫邀请相关 API 调用失败：参数无效，比如参数 `content` 的值超过最大限制长度 8K 字节。
        */
       INVITATION_API_CALL_ERR_INVALID_ARGUMENT = 1,
         
       /**
-       2: The method call fails. The call invitation has not started.
+       2: 呼叫邀请相关 API 调用失败：呼叫邀请未开始。
        */
       INVITATION_API_CALL_ERR_NOT_STARTED = 2,
         
       /**
-       3: The method call fails. The call invitation has ended.
+       3: 呼叫邀请相关 API 调用结果：呼叫邀请已结束。
        */
       INVITATION_API_CALL_ERR_ALREADY_END = 3, // accepted, failure, canceled, refused
         
       /**
-       4: The method call fails. The call invitation is already accepted.
+       4: 呼叫邀请相关 API 调用结果：已接受邀请。
        */
       INVITATION_API_CALL_ERR_ALREADY_ACCEPT = 4,   // more details
         
       /**
-       5: The method call fails. The call invitation is already sent.
+       5: 呼叫邀请相关 API 调用结果：呼叫邀请已发送。
        */
       INVITATION_API_CALL_ERR_ALREADY_SENT = 5,
     };
-
+    
     public struct SendMessageOptions {
+      
+      /// <summary>
+		  /// 是否设置为离线消息。
+		  /// @note 本设置仅适用于点对点消息，不适用于频道消息。
+		  /// </summary>
+		  /// <returns>
+      ///  - true: 将该消息设为离线消息。
+      ///  - false: （默认）不将该消息设为离线消息。
+      /// </returns>
       public bool enableOfflineMessaging;
+
+      /// <summary>
+		  /// **PRIVATE BETA** 保存为历史消息。
+		  /// @note 本设置仅适用于点对点消息，不适用于频道消息。
+		  /// </summary>
+		  /// <returns>
+      ///  - true: 将该消息保存为历史消息。
+      ///  - false:（默认）不将该消息保存为历史消息。
+      /// </returns>
       public bool enableHistoricalMessaging;
     };
 }

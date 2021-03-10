@@ -14,15 +14,14 @@ namespace agora_rtm {
         private RtmCallManager _rtmCallManager;
         private bool _disposed = false;
         /// <summary>
-        /// create an Rtm Client instance
-        /// The Agora RTM SDK supports creating multiple RtmClient instances.
-        /// All methods in the RtmClient class are executed asynchronously.
+        /// 创建并返回一个 #RtmClient 实例。
+        /// @note Agora RTM SDK 支持创建多个实例。
         /// </summary>
         /// <param name="appId">
-        /// The App ID issued to you from the Agora Console. Apply for a new App ID from Agora if it is missing from your kit.
+        /// 如果你的开发包里没有 App ID，请向声网申请一个新的 App ID。
         /// </param>
         /// <param name="eventHandler">
-        /// An RtmClientListener object that reports to the app on RTM SDK runtime events.
+        /// 一个 \ref agora_rtm.RtmClientEventHandler "RtmClientEventHandler" 对象。
         /// </param>
         public RtmClient(string appId, RtmClientEventHandler eventHandler) {
             if (appId == null || eventHandler == null) {
@@ -86,10 +85,10 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Gets the SDK version.
+        /// 获取 Agora RTM SDK 的版本信息。
         /// </summary>
         /// <returns>
-        /// The current version of the Agora RTM SDK in the string format. For example, 1.0.0.
+        /// String 格式的 Agora RTM SDK 的版本信息。比如：1.0.0。
         /// </returns>
         public static string GetSdkVersion() {
             IntPtr sdkVersion = _getRtmSdkVersion_rtm();
@@ -101,27 +100,35 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Logs in the Agora RTM system.
-        /// Note:
-        /// If you login with the same user ID from a different instance, your previous login will be kicked and you will be removed from the previously joined channels.
-        /// The call frequency limit for this method is 2 queries per second.
-        /// Only after you successfully call this method and when the SDK is in the <CONNECTION_STATE_CONNECTED> state, can you call the key RTM methods except:
+        /// 登录 Agora RTM 系统。
+        /// - 方法调用成功：本地用户收到回调 \ref agora_rtm.RtmClientEventHandler.OnLoginSuccessHandler "OnLoginSuccessHandler"。
+        /// - 方法调用失败：本地用户收到回调 \ref agora_rtm.RtmClientEventHandler.OnLoginFailureHandler "OnLoginFailureHandler"。错误码详见 \ref agora_rtm.LOGIN_ERR_CODE "LOGIN_ERR_CODE"。
+        /// @note
+        ///   - 异地登录后之前的状态（目前主要是加入的频道）不会保留。
+        ///   - 如果你在不同实例中以相同用户 ID 登录，之前的登录将会失效，你会被踢出之前加入的频道。
+        ///   - 只有在调用本方法成功加入频道后（即：当收到 \ref agora_rtm.RtmClientEventHandler.OnLoginSuccessHandler "OnLoginSuccessHandler" 回调时）才可以调用 RTM 的核心业务逻辑。以下方法除外：
+        ///     - #CreateChannel
+        ///     - #CreateMessage
+        ///     - \ref agora_rtm.IMessage.SetText "SetText"
+        ///     - #GetRtmCallManager
+        ///     - \ref agora_rtm.RtmCallManager.CreateLocalCallInvitation "CreateLocalCallInvitation"
+        ///     - #CreateChannelAttribute
         /// </summary>
         /// <param name="token">
-        /// The token used to log in the Agora RTM system and used when dynamic authentication is enabled. Set token as null in the integration and test stages.
+        /// 用于登录 Agora RTM 系统的动态密钥。开启动态鉴权后可用。集成及测试阶段请将 `token` 设置为 `null`。
         /// </param>
         /// <param name="userId">
-        /// The user ID of the user logging in the Agora RTM system. The string length must be less than 64 bytes with the following character scope:
-        /// All lowercase English letters: a to z
-        /// All uppercase English letters: A to Z
-        /// All numeric characters: 0 to 9
-        /// The space character.
-        /// Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
+        /// 登录 Agora RTM 系统的用户 ID。该字符串不可超过 64 字节。不可设为空、null 或 "null"。以下为支持的字符集范围:
+        ///     - 26 个小写英文字母 a-z
+        ///     - 26 个大写英文字母 A-Z
+        ///     - 10 个数字 0-9
+        ///     - 空格
+        ///     - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
         ///  A userId cannot be empty, null or "null".
         /// </param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///   - 0: 方法调用成功。
+        ///   - ≠0: 方法调用失败。错误码详见 \ref agora_rtm.LOGIN_ERR_CODE "LOGIN_ERR_CODE"。
         /// </returns>
         public int Login(string token, string userId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -133,12 +140,12 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Logs out of the Agora RTM system.
-        /// The local user receives the <OnLogoutHandler> callback.
+        /// 登出 Agora RTM 系统。
+        /// 本地用户收到回调 \ref agora_rtm.RtmClientEventHandler.OnLogoutHandler "OnLogoutHandler"。状态信息详见 \ref agora_rtm.LOGIN_ERR_CODE "LOGIN_ERR_CODE"。
         /// </summary>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure
+        ///   - 0: 方法调用成功。
+        ///   - ≠0: 方法调用失败。详见 #LOGOUT_ERR_CODE 。
         /// </returns>
         public int Logout() {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -150,13 +157,15 @@ namespace agora_rtm {
         }
         
         /// <summary>
-        /// Renews the RTM Token of the SDK.
-        /// You are required to renew your RTM Token when receiving the <OnTokenExpiredHandler> callback, and the <OnRenewTokenResultHandler> callback returns the result of this method call. The call frequency limit for this method is 2 calls per second.
+        /// 更新 SDK 的 RTM Token。
+        /// - 在收到 \ref agora_rtm.RtmClientEventHandler.OnTokenExpiredHandler "OnTokenExpiredHandler" 回调时你需要调用此方法更新 Token。
+        /// - \ref agora_rtm.RtmClientEventHandler.OnRenewTokenResultHandler "OnRenewTokenResultHandler" 回调会返回 Token 更新的结果。
+        /// - 该方法的调用频率为 2 次每秒。
         /// </summary>
-        /// <param name="token">Your new RTM Token. You need to generate the RTM Token yourself. See Generate an RTM Token.</param>
+        /// <param name="token">新的 RTM Token。你需要自行生成 RTM Token。参考《生成 RTM Token》。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure. 
+        ///   - 0: 方法调用成功。
+        ///   - ≠0: 方法调用失败。详见 #RENEW_TOKEN_ERR_CODE 。
         /// </returns>
         public int RenewToken(string token) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -168,31 +177,33 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Sends an (offline) peer-to-peer message to a specified user (receiver).
-        /// This method allows you to send a message to a specified user when he/she is offline. If you set a message as an offline message and the specified user is offline when
-        /// you send it, the RTM server caches it. Please note that for now we only cache 200 offline messages for up to seven days for each receiver. When the number of the
-        /// cached messages reaches this limit, the newest message overrides the oldest one.
-        /// If you use this method to send off a text message that starts off with AGORA_RTM_ENDCALL_PREFIX_<channelId>_<your additional information>, then this method is
-        /// compatible with the endCall method of the legacy Agora Signaling SDK. Replace <channelId> with the channel ID from which you want to leave (end call), and replace
-        /// <your additional information> with any additional information. Note that you must not put any "_" (underscore" in your additional information but you can set \<your
-        /// additional information\> as empty "".
-        /// The <OnSendMessageResultHandler> callback returns the result of this method call.
-        /// When the message arrives at the receiver, the receiver receives the <OnMessageReceivedFromPeerHandler> callback.
+        /// 向指定用户（接收者）发送点对点消息或点对点的离线消息。
+        /// - \ref agora_rtm.RtmChannelEventHandler.OnSendMessageResultHandler "OnSendMessageResultHandler" 向发送者返回方法调用的结果。
+        /// - 消息到达接收方后，接收者收到回调 \ref agora_rtm.RtmClientEventHandler.OnMessageReceivedFromPeerHandler "OnMessageReceivedFromPeerHandler"。
+        /// - 该方法允许你向离线用户发送点对点消息。如果指定用户在你发送离线消息时不在线，消息服务器会保存该条消息。
+        /// @note 
+        ///   - 目前我们只为每个接收端保存 200 条离线消息最长七天。当保存的离线消息超出限制时，最老的信息将会被最新的消息替换。
+        ///   - 本方法可与老信令 SDK 的 endCall 方法兼容。你只需在用本方法发送文本消息时将消息头设为 `GORA_RTM_ENDCALL_PREFIX_\<channelId\>_\<your additional information\>` 格式即可。请以 endCall 对应频道的 ID 替换 `\<channelId\>， \<your additional information\>` 为附加文本信息。附加文本信息中不可使用下划线 "_" ，附加文本信息可以设为空字符串 ""。
+        ///   - 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
         /// </summary>
         /// <param name="peerId">
-        /// User ID of the receiver. The string must not exceed 64 bytes in length. It cannot be empty, null, or "null". Supported characters:
-        /// The 26 lowercase English letters: a to z
-        /// The 26 uppercase English letters: A to Z
-        /// The 10 numbers: 0 to 9
-        /// "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
+        ///   - 接收者的用户 ID。该字符串不可超过 64 字节。不可设为空、null 或 "null"。以下为支持的字符集范围:
+        ///   - 26 个小写英文字母 a-z
+        ///   - 26 个大写英文字母 A-Z
+        ///   - 10 个数字 0-9
+        ///   - 空格
+        ///   - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
         /// </param>
         /// <param name="message">
-        /// The message to be sent. For information about creating a message,
+        /// 需要发送的消息。详见 \ref agora_rtm.IMessage "IMessage" 了解如何创建消息。
         /// </param>
-        /// <param name="SendMessageOptions">
-        /// Options when sending the message to a peer. 
-        /// </param>
-        /// <returns></returns>
+        /// <param name="options">
+        /// 消息发送选项。详见 \ref agora_rtm.SendMessageOptions "SendMessageOptions"。
+        /// </param> 
+        /// <returns>
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #PEER_MESSAGE_ERR_CODE 。
+        /// </returns>
         public int SendMessageToPeer(string peerId, IMessage message, SendMessageOptions options) {
             if (_rtmServicePtr == IntPtr.Zero)
 			{
@@ -203,19 +214,21 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// We do not recommend using this method to send a peer-to-peer message. Use sendMessageToPeer instead.
-        /// You can send messages, including peer-to-peer and channel messages, at a maximum frequency of (RTM SDK for Windows C++) 180 calls every three 
-        /// seconds or (RTM SDK for Linux C++) 1500 calls every three seconds.
+        /// @note
+        /// - 我们不推荐使用该方法发送点对点消息。请改用它的重载方法 #SendMessageToPeer 发送点对点消息或点对点的离线消息。
+        /// - \ref agora_rtm.RtmClientEventHandler.OnSendMessageResultHandler "OnSendMessageResultHandler" 向发送者返回方法调用的结果。
+        /// - 消息到达接收方后，接收者收到回调 \ref agora_rtm.RtmClientEventHandler.OnMessageReceivedFromPeerHandler "OnMessageReceivedFromPeerHandler"。
+        /// @note 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
         /// </summary>
         /// <param name="peerId">
-        /// User ID of the receiver.
+        /// 接收者的用户 ID。
         /// </param>
         /// <param name="message">
-        /// The message to be sent. For information about creating a message, see IMessage.
+        /// 需要发送的消息。详见 \ref agora_rtm.IMessage "IMessage"了解如何创建消息。
         /// </param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure. 
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #PEER_MESSAGE_ERR_CODE 。
         /// </returns>
         public int SendMessageToPeer(string peerId, IMessage message) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -227,18 +240,21 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Downloads a file or image from the Agora server to the local memory by media ID.
-        /// The SDK returns the result of this method call by the <OnMediaDownloadToMemoryResultHandler> callback.
+        /// 通过 media ID 从 Agora 服务器下载文件或图片至本地内存。
+        /// 方法调用结果由 SDK 通过 \ref agora_rtm.RtmClientEventHandler.OnMediaDownloadToMemoryResultHandler "OnMediaDownloadToMemoryResultHandler" 回调返回。
+        /// @note
+        /// - 该方法适用于需要快速读取下载文件或图片的场景。
+        /// - SDK 会在 \ref agora_rtm.RtmClientEventHandler.OnMediaDownloadToMemoryResult "OnMediaDownloadToMemoryResult" 回调结束后立即释放下载的文件或图片。
         /// </summary>
         /// <param name="mediaId">
-        /// The media ID of the file or image on the Agora server.
+        /// 服务器上待下载的文件或图片对应的 media ID。
         /// </param>
         /// <param name="requestId">
-        /// The unique ID of this download request.
+        /// 标识本次下载请求的唯一 ID。
         /// </param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #DOWNLOAD_MEDIA_ERR_CODE.
         /// </returns>
         public int DownloadMediaToMemory(string mediaId, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -250,15 +266,15 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Downloads a file or image from the Agora server to a specified local directory by media ID.
-        /// The SDK returns the result of this method call by the <OnMediaDownloadToFileResultHandler> callback.
+        /// 通过 media ID 从 Agora 服务器下载文件或图片至本地指定地址。
+        /// 方法调用结果由 SDK 通过 \ref agora_rtm.RtmClientEventHandler.OnMediaDownloadToFileResultHandler "OnMediaDownloadToFileResultHandler" 回调返回。
         /// </summary>
-        /// <param name="mediaId">The media ID of the file or image on the Agora server.</param>
-        /// <param name="filePath">The full path to the downloaded file or image. Must be in UTF-8.</param>
-        /// <param name="requestId">The unique ID of this download request.</param>
+        /// <param name="mediaId">服务器上待下载的文件或图片对应的 media ID。</param>
+        /// <param name="filePath">下载文件或图片在本地存储的完整路径。文件路径必须为 UTF-8 编码格式。</param>
+        /// <param name="requestId">标识本次下载请求的唯一 ID。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #DOWNLOAD_MEDIA_ERR_CODE 。
         /// </returns>
         public int DownloadMediaToFile(string mediaId, string filePath, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -270,16 +286,16 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Cancels an ongoing file or image download task by request ID.
-        /// The SDK returns the result of this method call with the <OnMediaCancelResultHandler> callback.
+        /// 通过 request ID 取消一个正在进行中的文件或图片下载任务。
+        /// 方法调用结果由 SDK 通过 \ref agora_rtm.RtmClientEventHandler.OnMediaCancelResultHandler "OnMediaCancelResultHandler" 回调返回。
+        /// @note 你只能取消一个正在进行中的下载任务。下载任务完成后则无法取消下载任务，因为相应的 request ID 已不再有效。
         /// </summary>
         /// <param name="requestId">
-        /// The unique ID of the download request to cancel.
+        /// 标识本次下载请求的唯一 ID。
         /// </param>
-        /// <param name="requestId">The unique ID of this download request.</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #CANCEL_MEDIA_ERR_CODE 。
         /// </returns>
         public int CancelMediaDownload(Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -291,15 +307,16 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Cancels an ongoing file or image upload task by request ID.
-        /// The SDK returns the result of this method call with the <OnMediaCancelResultHandler> callback.
+        /// 通过 request ID 取消一个正在进行中的文件或图片上传任务。
+        /// 方法调用结果由 SDK 通过 \ref agora_rtm.RtmClientEventHandler.OnMediaCancelResultHandler "OnMediaCancelResultHandler" 回调返回。
+        /// @note 你只能取消一个正在进行中的上传任务。上传任务完成后则无法取消上传任务，因为相应的 request ID 已不再有效。
         /// </summary>
         /// <param name="requestId">
-        /// The unique ID of the upload request to cancel.
+        /// 标识本次上传请求的唯一 ID。
         /// </param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure. 
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #CANCEL_MEDIA_ERR_CODE 。
         /// </returns>
         public int CancelMediaUpload(Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -311,19 +328,21 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Creates an Agora RTM channel.
-        /// If the method call succeeds, the SDK returns an <RtmChannel> instance.
-        /// If this method call fails, the SDK returns null.
+        /// 创建一个 Agora RTM 频道。
+        /// @note 一个 #RtmClient 实例中可以创建多个频道。但是同一个用户只能同时加入最多 20 个频道。请在不使用某个频道时，调用 #Dispose 方法销毁频道实例。
         /// </summary>
         /// <param name="channelId">
-        /// The unique channel name. A channelId cannot be empty, null, or "null". Must be less than 64 bytes in length. Supported characters:
-        /// All lowercase English letters: a to z
-        /// All uppercase English letters: A to Z
-        /// All numeric characters: 0 to 9
+        /// Agora RTM 频道名称。该字符串长度在 64 字节以内，不能设为空、null，或 "null"。以下为支持的字符集范围:
+        ///  - 26 个小写英文字母 a-z
+        ///  - 26 个大写英文字母 A-Z
+        ///  - 10 个数字 0-9
+        ///  - 空格
+        ///  - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
         /// </param>
-        /// <param name="rtmChannelEventHandler"></param>
+        /// <param name="rtmChannelEventHandler">See \ref agora_rtm.RtmChannelEventHandler "RtmChannelEventHandler".</param>
         /// <returns>
-        /// An <RtmChannel> object: Success. If a channel with the same channelId does not exist, the method returns the created channel instance. If a channel with the same channelId already exists, the method returns the existing channel instance.
+        ///  - 一个 \ref agora_rtm.RtmChannel "RtmChannel" 频道实例: 方法调用成功。如果具有相同 `channelId` 的频道不存在，此方法会返回已创建的频道实例。如果已经存在具有相同 `channelId` 的频道，此方法会返回已存在的频道实例。
+        ///  - 方法调用失败。原因可能是 `channelId` 无效或频道数量超过限制。
         /// </returns>
         public RtmChannel CreateChannel(string channelId, RtmChannelEventHandler rtmChannelEventHandler) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -350,11 +369,14 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Creates an empty <TextMessage> instance.
-        /// An <TextMessage> instance can be used either for a channel message or for a peer-to-peer message.
+        /// 创建并返回一个空文本 \ref agora_rtm.TextMessage "TextMessage" 消息实例。
+        /// @note 
+        ///  - \ref agora_rtm.TextMessage "TextMessage" 实例可用于频道和点对点消息消息。
+        ///  - 请在不需要 \ref agora_rtm.TextMessage "TextMessage" 时调用 \ref agora_rtm.RtmClient.Dispose "Dispose" 方法销毁其占用的资源。
+        ///  - 你可以在创建文本消息实例之后调用 \ref agora_rtm.IMessage.SetText "SetText" 方法设置消息内容。不过请确保文本消息长度不超过 32 KB。
         /// </summary>
         /// <returns>
-        /// An empty text <TextMessage> instance.
+        /// 一个空文本 \ref agora_rtm.TextMessage "TextMessage" 消息实例。
         /// </returns>
         public TextMessage CreateMessage() {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -367,10 +389,15 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// 
+        /// 创建并返回一个文本 "TextMessage" 消息实例。
+        /// @note 
+        ///  - \ref agora_rtm.TextMessage "TextMessage" 实例可用于频道和点对点消息消息。
+        ///  - 请在不需要 \ref agora_rtm.TextMessage "TextMessage" 时调用 \ref agora_rtm.RtmClient.Dispose "Dispose" 方法销毁其占用的资源。
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        /// <param name="text">文本消息内容。长度不得超过 32 KB。</param>
+        /// <returns>
+        /// 一个文本 \ref agora_rtm.TextMessage "TextMessage" 消息实例。
+        /// </returns>
         public TextMessage CreateMessage(string text) {
             if (_rtmServicePtr == IntPtr.Zero)
 			{
@@ -381,6 +408,17 @@ namespace agora_rtm {
             return new TextMessage(_MessagePtr, TextMessage.MESSAGE_FLAG.SEND);
         }
 
+        /// <summary>
+        /// 创建并返回一个自定义二进制 \ref agora_rtm.TextMessage "TextMessage" 消息实例。
+        /// @note 
+        ///  - \ref agora_rtm.TextMessage "TextMessage" 实例可用于频道和点对点消息消息。
+        ///  - 请在不需要 \ref agora_rtm.TextMessage "TextMessage" 时调用 \ref agora_rtm.RtmClient.Dispose "Dispose" 方法销毁其占用的资源。
+        ///  - 你可以在调用本方法后通过 \ref agora_rtm.IMessage.SetText "SetText" 方法设置自定义二进制消息的文字描述。但是请确保二进制消息和文字描述加起来的大小不超过 32 KB。
+        /// </summary>
+        /// <param name="rawData">二进制消息在内存中的首地址。</param>
+        /// <returns>
+        /// 一个自定义二进制 \ref agora_rtm.TextMessage "TextMessage" 消息实例。
+        /// </returns>
         public TextMessage CreateMessage(byte[] rawData) {
             if (_rtmServicePtr == IntPtr.Zero)
 			{
@@ -390,7 +428,18 @@ namespace agora_rtm {
             IntPtr _MessagePtr = createMessage2_rtm(_rtmServicePtr, rawData, rawData.Length);
             return new TextMessage(_MessagePtr, TextMessage.MESSAGE_FLAG.SEND);
         }
-
+        
+        /// <summary>
+        /// 创建并返回一个包含文字描述的自定义二进制 \ref agora_rtm.TextMessage "TextMessage" 消息实例。
+        ///  - \ref agora_rtm.TextMessage "TextMessage" 实例可用于频道和点对点消息消息。
+        ///  - 请在不需要 \ref agora_rtm.TextMessage "TextMessage" 时调用 \ref agora_rtm.RtmClient.Dispose "Dispose" 方法销毁其占用的资源。
+        ///  - 你也可以先将 `description` 设为 "" ，消息创建成功后可以通过调用 \ref agora_rtm.IMessage.SetText "SetText" 方法设置自定义二进制消息的文字描述。但是请确保自定义二进制消息内容和文字描述加起来的大小不超过 32 KB。
+        /// </summary>
+        /// <param name="rawData">自定义二进制消息在内存中的首地址。</param>
+        /// <param name="description">自定义二进制消息的简短文字描述。设置文字描述时，请确保自定义二进制消息内容和文字描述加起来的大小不超过 32 KB。</param>
+        /// <returns>
+        /// 一个二进制 \ref agora_rtm.TextMessage "TextMessage" 消息实例。
+        /// </returns>
         public TextMessage CreateMessage(byte[] rawData, string description) {
             if (_rtmServicePtr == IntPtr.Zero)
 			{
@@ -402,13 +451,13 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Creates an <ImageMessage> instance by media ID.
-        /// If you have at hand the media ID of an image on the Agora server, you can call this method to create an <ImageMessage> instance.
-        /// If you do not have a media ID, then you must call <CreateImageMessageByUploading> to get a corresponding IImageMessage instance by uploading an image to the Agora RTM server.
+        /// 通过 media ID 创建一个 \ref agora_rtm.ImageMessage "ImageMessage" 实例。
+        /// - 如果你已经有了一个保存在 Agora 服务器上的图片对应的 media ID，你可以调用本方法创建一个 \ref agora_rtm.ImageMessage "ImageMessage" 实例。
+        /// - 如果你没有相应的 media ID，那么你必须通过调用 #CreateImageMessageByUploading 方法上传相应的文件到 Agora 服务器来获得一个对应的 \ref agora_rtm.ImageMessage "ImageMessage" 实例。
         /// </summary>
-        /// <param name="mediaId">The media ID of an uploaded image on the Agora server.</param>
+        /// <param name="mediaId">已上传到 Agora 服务器的图片的 media ID。</param>
         /// <returns>
-        /// An <ImageMessage> instance.
+        /// 一个 \ref agora_rtm.ImageMessage "ImageMessage" 实例。
         /// </returns>
         public ImageMessage CreateImageMessageByMediaId(string mediaId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -421,16 +470,19 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Gets an <ImageMessage> instance by uploading an image to the Agora server.
-        /// The SDK returns the result by the OnImageMediaUploadResultHandler callback. If success, this callback returns a corresponding ImageMessage instance.
-        /// If the uploaded image is in JPEG, JPG, BMP, or PNG format, the SDK calculates the width and height of the image. You can call GetWidth and GetHeight to get the calculated width and height.
-        /// Otherwise, you need to call SetWidth and SetHeight to set the width and height of the uploaded image by yourself.
+        /// 上传一个图片到 Agora 服务器以获取一个相应的 \ref agora_rtm.ImageMessage "ImageMessage" 图片消息实例。
+        /// SDK 会通过 \ref agora_rtm.RtmClientEventHandler.OnImageMediaUploadResultHandler "OnImageMediaUploadResultHandler" 回调返回方法的调用结果。如果方法调用成功，该回调返回一个对应的 \ref agora_rtm.ImageMessage "ImageMessage" 实例。
+        /// - 如果上传图片为 JPEG、JPG、BMP，或 PNG 格式，SDK 会自动计算上传图片的宽和高。你可以通过调用 \ref agora_rtm.ImageMessage.GetWidth "GetWidth" 方法获取计算出的宽。
+        /// - 如果上传图片为其他格式，你需要调用 \ref agora_rtm.ImageMessage.SetWidth "SetWidth" 和 \ref agora_rtm.ImageMessage.SetHeight "SetHeight" 方法自行设置上传图片的宽和高。
+        /// @note
+        ///  - 如果你已经有了一个保存在 Agora 服务器上的对应的 media ID，你可以调用 \ref agora_rtm.RtmClient.CreateImageMessageByMediaId "CreateImageMessageByMediaId" 创建一个 \ref agora_rtm.ImageMessage "ImageMessage" 实例。
+        ///  - 如需取消一个正在进行的上传任务，请调用 \ref agora_rtm.RtmClient.CancelMediaUpload "CancelMediaUpload" 方法。
         /// </summary>
-        /// <param name="filePath">The full path to the local image to upload. Must be in UTF-8.</param>
-        /// <param name="requestId">The unique ID of the upload request.</param>
+        /// <param name="filePath">待上传图片在本地的完整路径。文件路径必须为 UTF-8 编码格式。</param>
+        /// <param name="requestId">标识本次上传请求的唯一 ID。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure. 
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。错误码详见 #UPLOAD_MEDIA_ERR_CODE 。
         /// </returns>
         public int CreateImageMessageByUploading(string filePath, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -442,15 +494,15 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Creates an <FileMessage> instance by media ID.
-        /// If you have at hand the media ID of a file on the Agora server, you can call this method to create an FileMessage instance.
-        /// If you do not have a media ID, then you must call <CreateFileMessageByUploading> to get a corresponding FileMessage instance by uploading a file to the Agora RTM server.
+        /// 通过 media ID 创建一个 \ref agora_rtm.FileMessage "FileMessage" 实例。
+        /// - 如果你已经有了一个保存在 Agora 服务器上的文件对应的 media ID，你可以调用本方法创建一个 \ref agora_rtm.FileMessage "FileMessage" 实例。
+        /// - 如果你没有相应的 media ID，那么你必须通过调用 #CreateFileMessageByUploading 方法上传相应的文件到 Agora 服务器来获得一个对应的 \ref agora_rtm.FileMessage "FileMessage" 实例。
         /// </summary>
         /// <param name="mediaId">
-        /// The media ID of an uploaded file on the Agora server.
+        /// 已上传到 Agora 服务器的文件的 media ID。
         /// </param>
         /// <returns>
-        /// An <FileMessage> instance.
+        /// 一个 \ref agora_rtm.FileMessage "FileMessage" 实例。
         /// </returns>
         public FileMessage CreateFileMessageByMediaId(string mediaId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -463,18 +515,18 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Gets an <FileMessage> instance by uploading a file to the Agora server.
-        /// The SDK returns the result with the OnFileMediaUploadResultHandler callback. If success, this callback returns a corresponding FileMessage instance.
+        /// 上传一个文件到 Agora 服务器以获取一个相应的 \ref agora_rtm.FileMessage "FileMessage" 文件消息实例。
+        /// SDK 会通过 \ref agora_rtm.RtmClientEventHandler.OnFileMediaUploadResultHandler "OnFileMediaUploadResultHandler" 回调返回方法的调用结果。如果方法调用成功，该回调返回一个对应的 \ref agora_rtm.FileMessage "FileMessage" 实例。
         /// </summary>
         /// <param name="filePath">
-        /// The full path to the local file to upload. Must be in UTF-8.
+        /// 待上传文件在本地的完整路径。文件路径必须为 UTF-8 编码格式。
         /// </param>
         /// <param name="requestId">
-        /// The unique ID of this upload request.
+        /// 标识本次上传请求的唯一 ID。
         /// </param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure. 
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。错误码详见 #UPLOAD_MEDIA_ERR_CODE 。
         /// </returns>
         public int CreateFileMessageByUploading(string filePath, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -486,10 +538,10 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Creates an <RtmChannelAttribute> instance.
+        /// 创建一个 \ref agora_rtm.RtmChannelAttribute "RtmChannelAttribute" 实例。
         /// </summary>
         /// <returns>
-        /// An <RtmChannelAttribute> instance.
+        /// 一个 \ref agora_rtm.RtmChannelAttribute "RtmChannelAttribute" 实例。
         /// </returns>
         public RtmChannelAttribute CreateChannelAttribute() {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -504,14 +556,15 @@ namespace agora_rtm {
         }
         
         /// <summary>
-        /// Provides the technical preview functionalities or special customizations by configuring the SDK with JSON options.
+        /// 通过 JSON 配置 SDK 提供技术预览或特别定制功能。
+        /// @note JSON 选项默认不公开。声网工程师正在努力寻求以标准化方式公开 JSON 选项。详情请联系 support@agora.io。
         /// </summary>
         /// <param name="parameters">
-        /// SDK options in the JSON format.
+        /// JSON 格式的 SDK 选项。
         /// </param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败
         /// </returns>
         public int SetParameters(string parameters) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -523,16 +576,17 @@ namespace agora_rtm {
         }
         
         /// <summary>
-        /// Queries the online status of the specified users.
-        /// Online: The user has logged in the Agora RTM system.
-        /// Offline: The user has logged out of the Agora RTM system.
-        /// The SDK returns the result by the <OnQueryPeersOnlineStatusResultHandler> callback.
+        /// 查询指定用户的在线状态。
+        /// - 在线：用户已登录到 Agora RTM 系统。
+        /// - 不在线：用户已登出 Agora RTM 系统或因其他原因与 Agora RTM 系统断开连接。
+        /// @note 调用频率上限为每 5 秒 10 次.
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnQueryPeersOnlineStatusResultHandler "OnQueryPeersOnlineStatusResultHandler" 回调返回方法调用结果。
         /// </summary>
-        /// <param name="peerIds">An array of the specified user IDs.</param>
-        /// <param name="requestId">The unique ID of this request.</param>
+        /// <param name="peerIds">用户 ID 列表。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 \ref agora_rtm.QUERY_PEERS_ONLINE_STATUS_ERR "QUERY_PEERS_ONLINE_STATUS_ERR"。
         /// </returns>
         public int QueryPeersOnlineStatus(string [] peerIds, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -544,15 +598,21 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Subscribes to the online status of the specified users.
-        /// The SDK returns the result by the <OnSubscriptionRequestResultHandler> callback.
-        /// When the method call succeeds, the SDK returns the <OnPeersOnlineStatusChangedHandler> callback to report the online status of peers, to whom you subscribe.
-        /// When the online status of the peers, to whom you subscribe, changes, the SDK returns the <OnPeersOnlineStatusChangedHandler> callback to report whose online status has changed.
-        /// If the online status of the peers, to whom you subscribe, changes when the SDK is reconnecting to the server, the SDK returns the onPeersOnlineStatusChanged callback to report whose online status has changed when successfully reconnecting to the server.
+        /// 订阅指定单个或多个用户的在线状态。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnSubscriptionRequestResultHandler "OnSubscriptionRequestResultHandler" 回调返回方法调用结果。
+        /// - 首次订阅成功后，SDK 会通过 \ref agora_rtm.RtmClientEventHandler.OnPeersOnlineStatusChangedHandler "OnPeersOnlineStatusChangedHandler" 回调返回被订阅用户在线状态。
+        /// - 每当被订阅用户在线状态发生变化时，SDK 都会通过 \ref agora_rtm.RtmClientEventHandler.OnPeersOnlineStatusChangedHandler "OnPeersOnlineStatusChangedHandler" 回调通知订阅方。
+        /// - 如果 SDK 在断线重连过程中有被订阅用户的在线状态发生改变，SDK 会在重连成功时通过 \ref agora_rtm.RtmClientEventHandler.OnPeersOnlineStatusChangedHandler "OnPeersOnlineStatusChangedHandler" 回调通知订阅方。
+        /// @note 
+        ///  - 用户登出 Agora RTM 系统后，所有之前的订阅内容都会被清空；重新登录后，如需保留之前订阅内容则需重新订阅。
+        ///  - SDK 会在网络连接中断时进入断线重连状态。重连成功时 SDK 会自动重新订阅之前订阅用户，无需人为干预。
         /// </summary>
-        /// <param name="peerIds">An array of the specified user IDs.</param>
-        /// <param name="requestId">The unique ID of this request.</param>
-        /// <returns></returns>
+        /// <param name="peerIds">用户 ID 列表。最多不超过 512 个用户 ID。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
+        /// <returns>
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #PEER_SUBSCRIPTION_STATUS_ERR 。
+        /// </returns>
         public int SubscribePeersOnlineStatus(string [] peerIds, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
             {
@@ -563,12 +623,15 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Unsubscribes from the online status of the specified users.
-        /// The SDK returns the result by the <OnSubscriptionRequestResultHandler> callback.
+        /// 退订指定单个或多个用户的在线状态。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnSubscriptionRequestResultHandler "OnSubscriptionRequestResultHandler" 回调返回方法调用结果。
         /// </summary>
-        /// <param name="peerIds">An array of the specified user IDs.</param>
-        /// <param name="requestId">The unique ID of this request.</param>
-        /// <returns></returns>
+        /// <param name="peerIds">用户 ID 列表。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
+        /// <returns> 
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #PEER_SUBSCRIPTION_STATUS_ERR 。
+        /// </returns>
         public int UnsubscribePeersOnlineStatus(string [] peerIds, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
             {
@@ -579,14 +642,14 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Gets a list of the peers, to whose specific status you have subscribed.
-        /// The SDK returns the result by the <OnQueryPeersBySubscriptionOptionResultHandler> callback.
+        /// 获取某特定内容被订阅的用户列表。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnQueryPeersBySubscriptionOptionResultHandler "OnQueryPeersBySubscriptionOptionResultHandler" 回调返回方法调用结果。
         /// </summary>
-        /// <param name="option">The status type, to which you have subscribed. </param>
-        /// <param name="requestId">The unique ID of this request.</param>
+        /// <param name="option">被订阅的类型。详见 \ref agora_rtm.PEER_SUBSCRIPTION_OPTION "PEER_SUBSCRIPTION_OPTION"。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure. 
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR 。
         /// </returns>
         public int QueryPeersBySubscriptionOption(PEER_SUBSCRIPTION_OPTION option, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -598,12 +661,12 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Sets the size of a single log file. The SDK has two log files with the same size.
+        /// 设置 SDK 输出的单个日志文件的大小，单位为 KB。 SDK 设有 2 个大小相同的日志文件。
         /// </summary>
-        /// <param name="fileSizeInKBytes">The size of a single log file (KB). For RTM C++ SDK for Windows, the default is 10240 (KB). For RTM C++ SDK for Linux, the default is 102400 (KB). The value range is [512 KB, 1 GB].</param>
+        /// <param name="fileSizeInKBytes">SDK 输出的单个日志文件的大小，单位为 KB。默认值为 10240 (KB)。取值范围为 [512 KB, 1 GB]。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。
         /// </returns>
         public int SetLogFileSize(int fileSizeInKBytes) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -615,13 +678,13 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Sets the output log level of the SDK.
-        /// You can use one or a combination of the filters. The log level follows the sequence of OFF, CRITICAL, ERROR, WARNING, and INFO. Choose a level to see the logs preceding that level. If, for example, you set the log level to WARNING, you see the logs within levels CRITICAL, ERROR, and WARNING.
+        /// 设置日志输出等级。
+        /// 设置 SDK 的输出日志输出等级。不同的输出等级可以单独或组合使用。日志级别顺序依次为 `OFF`、`CRITICAL`、`ERROR`、`WARNING` 和 `INFO`。选择一个级别，你就可以看到在该级别之前所有级别的日志信息。例如，你选择 `WARNING` 级别，就可以看到在 `CRITICAL`、`ERROR` 和 `WARNING` 级别上的所有日志信息。
         /// </summary>
-        /// <param name="fileter">The log filter level. </param>
+        /// <param name="fileter">日志输出等级。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。
         /// </returns>
         public int SetLogFilter(int fileter) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -633,17 +696,18 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Specifies the default path to the SDK log file.
-        /// Ensure that the directory holding the log file exists and is writable.
-        /// Ensure that you call this method immediately after calling the initialize method to initialize an IRtmService instance, otherwise the output log may be incomplete.
+        /// 设定日志文件的默认地址。
+        /// @note 
+        ///  - 请确保指定的路径可写。
+        ///  - 如需调用本方法，请在调用 \ref agora_rtm.RtmClient.RtmClient "RtmClient" 方法创建 \ref agora_rtm.RtmClient "RtmClient" 实例后立即调用，否则会造成输出日志不完整。
         /// 
         /// </summary>
         /// <param name="logFilePath">
-        /// The absolute file path to the log file. The string of logfile is in UTF-8.
+        /// 日志文件的绝对路径。编码格式为 UTF-8。
         /// </param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。
         /// </returns>
         public int SetLogFile(string logFilePath) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -655,12 +719,18 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Gets the member count of specified channels.
-        /// The SDK returns the result by the <OnGetChannelMemberCountResultHandler> callback.
+        /// 查询单个或多个频道的成员人数。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnGetChannelMemberCountResultHandler "OnGetChannelMemberCountResultHandler" 回调返回方法调用结果。
+        /// @note 
+        ///  - 该方法的调用频率上限为每秒 1 次。
+        ///  - 不支持一次查询超过 32 个频道的成员人数。
         /// </summary>
-        /// <param name="channelIds">An array of the specified channel IDs.</param>
-        /// <param name="requestId">	The unique ID of this request.</param>
-        /// <returns></returns>
+        /// <param name="channelIds">指定频道名数组。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
+        /// <returns>        
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #GET_CHANNEL_MEMBER_COUNT_ERR_CODE 。
+        /// </returns>
         public int GetChannelMemberCount(string[] channelIds, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
 			{
@@ -671,13 +741,19 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Gets the attributes of a specified channel by attribute keys.
-        /// The SDK returns the result by the <OnGetChannelAttributesResultHandler> callback.
+        /// 查询某指定频道指定属性名的属性。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnGetChannelAttributesResultHandler "OnGetChannelAttributesResultHandler" 回调返回方法调用结果。
+        /// @note 
+        ///  - 你无需加入指定频道即可查询该频道的频道属性。
+        ///  - #GetChannelAttributes 和 #GetChannelAttributesByKeys 一并计算在内：调用频率上限为每 5 秒 10 次。
         /// </summary>
-        /// <param name="channelId">The channel ID of the specified channel.</param>
-        /// <param name="attributeKeys">An array of attribute keys.</param>
-        /// <param name="requestId">	The unique ID of this request.</param>
-        /// <returns></returns>
+        /// <param name="channelId">该指定频道的频道 ID。</param>
+        /// <param name="attributeKeys">频道属性名数组。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
+        /// <returns>
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #ATTRIBUTE_OPERATION_ERR 。
+        /// </returns>
         public int GetChannelAttributesByKeys(string channelId, string[] attributeKeys, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
 			{
@@ -688,14 +764,14 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Gets all attributes of a specified channel.
-        /// The SDK returns the result by the <OnGetChannelAttributesResultHandler> callback.
+        /// 查询某指定频道的全部属性。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnGetChannelAttributesResultHandler "OnGetChannelAttributesResultHandler" 回调返回方法调用结果。
         /// </summary>
-        /// <param name="channelId">The channel ID of the specified channel.</param>
-        /// <param name="requestId">The unique ID of this request.</param>
+        /// <param name="channelId">该指定频道的频道 ID。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure. 
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #ATTRIBUTE_OPERATION_ERR 。
         /// </returns>
         public int GetChannelAttributes(string channelId, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -707,18 +783,18 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Clears all attributes of a specified channel.
-        /// The SDK returns the result by the <OnClearChannelAttributesResultHandler> callback.
-        /// You do not have to join the specified channel to clear its attributes.
-        /// The attributes of a channel will be cleared if the channel remains empty (has no members) for a couple of minutes.
-        /// 
+        /// 清空某指定频道的属性。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnClearChannelAttributesResultHandler "OnClearChannelAttributesResultHandler" 回调返回方法调用结果。
+        /// @note
+        ///  - 你无需加入指定频道即可删除该频道属性。
+        ///  - #SetChannelAttributes 、 #DeleteChannelAttributesByKeys 和 #ClearChannelAttributes 一并计算在内：调用频率上限为每 5 秒 10 次。
         /// </summary>
-        /// <param name="channelId">The channel ID of the specified channel.</param>
-        /// <param name="enableNotificationToChannelMembers">Indicates whether or not to notify all channel members of a channel attribute change.</param>
-        /// <param name="requestId">The unique ID of this request.</param>
+        /// <param name="channelId">该指定频道的频道 ID。</param>
+        /// <param name="enableNotificationToChannelMembers">指示是否将通道属性更改通知所有通道成员。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #ATTRIBUTE_OPERATION_ERR 。
         /// </returns>
         public int ClearChannelAttributes(string channelId, bool enableNotificationToChannelMembers, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -730,14 +806,22 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Deletes the attributes of a specified channel by attribute keys.
-        /// The SDK returns the result by the <OnDeleteChannelAttributesResultHandler> callback.
+        /// 删除某指定频道的指定属性。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnDeleteChannelAttributesResultHandler "OnDeleteChannelAttributesResultHandler" 回调返回方法调用结果。
+        /// @note
+        ///  - 你无需加入指定频道即可删除该频道属性。
+        ///  - 当某频道处于空频道状态（无人状态）数分钟后，该频道的频道属性将被清空。
+        ///  - 如果存在多个用户有权限修改频道属性，那么我们建议在修改频道属性前先通过调用 #GetChannelAttributes 方法更新本地频道属性缓存。
+        ///  - #SetChannelAttributes 、 #DeleteChannelAttributesByKeys 和 #ClearChannelAttributes 一并计算在内：调用频率上限为每 5 秒 10 次。
         /// </summary>
-        /// <param name="channelId">The channel ID of the specified channel.</param>
-        /// <param name="attributeKeys">An array of channel attribute keys.</param>
-        /// <param name="enableNotificationToChannelMembers">Indicates whether or not to notify all channel members of a channel attribute change.</param>
-        /// <param name="requestId">The unique ID of this request.</param>
-        /// <returns></returns>
+        /// <param name="channelId">该指定频道的频道 ID。</param>
+        /// <param name="attributeKeys">频道属性名数组。</param>
+        /// <param name="enableNotificationToChannelMembers">指示是否将通道属性更改通知所有通道成员。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
+        /// <returns>
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #ATTRIBUTE_OPERATION_ERR 。
+        /// </returns>
         public int DeleteChannelAttributesByKeys(string channelId, string [] attributeKeys, bool enableNotificationToChannelMembers, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
 			{
@@ -748,15 +832,16 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Gets the attributes of a specified user by attribute keys.
-        /// The SDK returns the result by the <OnGetUserAttributesResultHandler> callback.
+        /// 查询指定用户指定属性名的属性。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnGetUserAttributesResultHandler "OnGetUserAttributesResultHandler" 回调返回方法调用结果。
+        /// @note #GetUserAttributes 和 #GetUserAttributesByKeys 一并计算在内：调用频率上限为每 5 秒 40 次。
         /// </summary>
-        /// <param name="userId">The user ID of the specified user.</param>
-        /// <param name="attributeKeys">An array of the attribute keys.</param>
-        /// <param name="requestId">The unique ID of this request.</param>
+        /// <param name="userId">指定用户的用户 ID。</param>
+        /// <param name="attributeKeys">属性名数组。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure. 
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #ATTRIBUTE_OPERATION_ERR 。
         /// </returns>
         public int GetUserAttributesByKeys(string userId, string [] attributeKeys, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -768,14 +853,15 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Gets all attributes of a specified user.
-        /// The SDK returns the result by the <OnGetUserAttributesResultHandler> callback.
+        /// 查询指定用户的全部属性。
+        /// SDK 将通过  \ref agora_rtm.RtmClientEventHandler.OnGetUserAttributesResultHandler "OnGetUserAttributesResultHandler" 回调返回方法调用结果。
+        /// @note #GetUserAttributes 和 #GetUserAttributesByKeys 一并计算在内：调用频率上限为每 5 秒 40 次。 
         /// </summary>
-        /// <param name="userId">The user ID of the specified user.</param>
-        /// <param name="requestId">The unique ID of this request.</param>
+        /// <param name="userId">指定用户的用户 ID。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure. 
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #ATTRIBUTE_OPERATION_ERR 。
         /// </returns>
         public int GetUserAttributes(string userId, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -787,13 +873,14 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Clears all attributes of the local user.
-        /// The SDK returns the result by the <OnClearLocalUserAttributesResultHandler> callback.
+        /// 清空本地用户的属性。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnClearLocalUserAttributesResultHandler "OnClearLocalUserAttributesResultHandler" 回调返回方法调用结果。
+        /// @note #DeleteLocalUserAttributesByKeys 和 #ClearLocalUserAttributes 一并计算在内：调用频率上限为每 5 秒 40 次。 
         /// </summary>
-        /// <param name="requestId">The unique ID of this request.</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure. 
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #ATTRIBUTE_OPERATION_ERR 。
         /// </returns>
         public int ClearLocalUserAttributes(Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -805,14 +892,15 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Deletes the local user's attributes by attribute keys.
-        /// The SDK returns the result by the <OnDeleteLocalUserAttributesResultHandler> callback.
+        /// 删除本地用户的指定属性。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnDeleteLocalUserAttributesResultHandler "OnDeleteLocalUserAttributesResultHandler" 回调返回方法调用结果。
+        /// @note #DeleteLocalUserAttributesByKeys 和 #ClearLocalUserAttributes 一并计算在内：调用频率上限为每 5 秒 10 次。
         /// </summary>
-        /// <param name="attributeKeys">An array of the attribute keys to be deleted.</param>
-        /// <param name="requestId">The unique ID of this request.</param>
+        /// <param name="attributeKeys">属性名数组。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
         /// <returns>
-        /// 0: Success.
-        /// ≠0: Failure.
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #ATTRIBUTE_OPERATION_ERR 。
         /// </returns>
         public int DeleteLocalUserAttributesByKeys(string [] attributeKeys, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -824,17 +912,22 @@ namespace agora_rtm {
         }
 
         /// <summary>
-        /// Resets the attributes of a specified channel.
-        /// The SDK returns the result by the <OnSetChannelAttributesResultHandler> callback.
-        /// You do not have to join the specified channel to update its attributes.
-        /// The attributes of a channel will be cleared if the channel remains empty (has no members) for a couple of minutes.
-        ///If more than one user can update the channel attributes, then Agora recommends calling <getChannelAttributes> to update the cache before calling this method.
+        /// 全量设置某指定频道的属性。
+        /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnSetChannelAttributesResultHandler "OnSetChannelAttributesResultHandler" 回调返回方法调用结果。
+        /// @note
+        ///  - 你无需加入指定频道即可为该频道设置频道属性。
+        ///  - 当某频道处于空频道状态（无人状态）数分钟后，该频道的频道属性将被清空。
+        ///  - 如果存在多个用户有权限修改频道属性，那么我们建议在修改频道属性前先通过调用 #GetChannelAttributes 方法更新本地频道属性缓存。
+        ///  - #SetChannelAttributes， #DeleteLocalUserAttributesByKeys 和 #ClearLocalUserAttributes 一并计算在内：调用频率上限为每 5 秒 10 次。
         /// </summary>
-        /// <param name="channelId">The channel ID of the specified channel.</param>
-        /// <param name="attributes">An array of channel attributes.</param>
-        /// <param name="options">Options for this attribute operation</param>
-        /// <param name="requestId">The unique ID of this request.</param>
-        /// <returns></returns>
+        /// <param name="channelId">该指定频道的频道 ID。</param>
+        /// <param name="attributes">频道属性数组。详见 \ref agora_rtm.RtmChannelAttribute "RtmChannelAttribute"。</param>
+        /// <param name="options">频道属性操作选项。详见 \ref agora_rtm.ChannelAttributeOptions "ChannelAttributeOptions"。</param>
+        /// <param name="requestId">标识本次请求的的唯一 ID。</param>
+        /// <returns>
+        ///  - 0: 方法调用成功。
+        ///  - ≠0: 方法调用失败。详见 #ATTRIBUTE_OPERATION_ERR 。
+        /// </returns>
         public int SetChannelAttributes(string channelId, RtmChannelAttribute [] attributes, ChannelAttributeOptions options, Int64 requestId)
         {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -854,10 +947,12 @@ namespace agora_rtm {
         } 
 
         /// <summary>
-        /// Gets an RtmCallManager object.
+        /// 获取 \ref agora_rtm.RtmCallManager "RtmCallManager" 对象。
+        /// 每个 #RtmClient 实例都有各自唯一的 \ref agora_rtm.RtmCallManager "RtmCallManager" 实例。属于不同 #RtmClient 实例的 \ref agora_rtm.RtmCallManager "RtmCallManager" 实例各不相同。
+        /// @note 如果不再使用 \ref agora_rtm.RtmCallManager "RtmCallManager" ，请调用 \ref agora_rtm.RtmCallManager.Dispose "Dispose" 方法释放其占用资源。
         /// </summary>
-        /// <param name="eventHandler">	An RtmCallEventHandler object.</param>
-        /// <returns>An RtmCallManager object.</returns>
+        /// <param name="eventHandler">	一个 \ref agora_rtm.RtmCallEventHandler "RtmCallEventHandler" 对象。</param>
+        /// <returns>一个 \ref agora_rtm.RtmCallManager "RtmCallManager" 对象。</returns>
         public RtmCallManager GetRtmCallManager(RtmCallEventHandler eventHandler) {
             if (_rtmServicePtr == IntPtr.Zero)
             {
@@ -875,6 +970,9 @@ namespace agora_rtm {
             return _rtmCallManager;
         }
 
+        /// <summary>
+        /// 释放当前 #RtmClient 实例使用的所有资源。
+        /// </summary>
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);

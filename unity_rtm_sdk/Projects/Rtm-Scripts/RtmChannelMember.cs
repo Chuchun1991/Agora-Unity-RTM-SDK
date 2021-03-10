@@ -20,17 +20,17 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Retrieves the user ID of a user in the channel.
+		/// 获取频道内指定用户的 ID。
 		/// </summary>
-		/// <returns>User ID of a user in the channel.</returns>
+		/// <returns>频道内指定用户的 ID。</returns>
 		public string GetUserId() {
 			return _UserId;
 		}
 
 		/// <summary>
-		/// Retrieves the channel ID of the user.
+		/// 获取指定用户所在频道的 ID。
 		/// </summary>
-		/// <returns>Channel ID of the user.</returns>
+		/// <returns>指定用户所在频道的 ID。</returns>
 		public string GetChannelId() {
 			return _ChannelId;
 		}

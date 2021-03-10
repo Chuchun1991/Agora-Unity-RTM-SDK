@@ -19,16 +19,16 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Joins a channel.
-		/// You can join a maximum of 20 RTM channels at the same time. When the number of the channels you join exceeds the limit, you receive the JOIN_CHANNEL_ERR_FAILURE error code.
-		/// If this method call succeeds:
-		/// The local user receives the onJoinSuccess callback.
-		/// All remote users receive the onMemberJoined callback.
-		/// If this method call fails, the local user receives the onJoinFailure callback. See JOIN_CHANNEL_ERR for the error codes.
+		/// 加入频道。
+		/// @note 同一用户只能同时加入最多 20 个频道。加入频道超限时用户会收到错误码 \ref agora_rtm.LEAVE_CHANNEL_ERR.JOIN_CHANNEL_ERR_FAILURE "JOIN_CHANNEL_ERR_FAILURE"。
+		/// - 方法调用成功：
+	    ///   - 本地用户收到回调 \ref agora_rtm.RtmChannelEventHandler.OnJoinSuccessHandler "OnJoinSuccessHandler"。
+		///   - 所有远端用户收到回调 \ref agora_rtm.RtmChannelEventHandler.OnMemberJoinedHandler "OnMemberJoinedHandler"。
+		/// - 方法调用失败：本地用户收到回调 \ref agora_rtm.RtmChannelEventHandler.OnJoinFailureHandler "OnJoinFailureHandler"。 错误代码信息详见 \ref agora_rtm.JOIN_CHANNEL_ERR "JOIN_CHANNEL_ERR"。
 		/// </summary>
 		/// <returns>
-		/// 0: Success.
-		/// ≠0: Failure. 
+		///  - 0: 方法调用成功。
+		///  - ≠0: 方法调用失败。错误码详见 \ref agora_rtm.LEAVE_CHANNEL_ERR "JOIN_CHANNEL_ERR"。
 		/// </returns>
 		public int Join() {
 			if (_rtmChannelPtr == IntPtr.Zero)
@@ -40,15 +40,15 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Leaves a channel.
-		/// If this method call succeeds:
-		/// The local user receives the onLeave callback with the LEAVE_CHANNEL_ERR_OK state.
-		/// All remote users receive the onMemberLeft callback.
-		/// If this method call fails, the local user receives the onLeave callback with an error code. See LEAVE_CHANNEL_ERR for the error codes.
+		/// 离开频道。
+		/// - 方法调用成功：
+		///   - 本地用户收到回调 \ref agora_rtm.RtmChannelEventHandler.OnLeaveHandler "OnLeaveHandler" 的 `LEAVE_CHANNEL_ERR_OK` 状态。
+		///   - 所有远端用户收到回调 \ref agora_rtm.RtmChannelEventHandler.OnMemberLeftHandler "OnMemberLeftHandler" callback。
+		/// - 方法调用失败：本地用户收到回调 \ref agora_rtm.RtmChannelEventHandler.OnLeaveHandler "OnLeaveHandler" 的错误代码。错误代码信息详见 \ref agora_rtm.LEAVE_CHANNEL_ERR "LEAVE_CHANNEL_ERR"。
 		/// </summary>
 		/// <returns>
-		/// 0: Success.
-		/// ≠0: Failure.
+		///  - 0: 方法调用成功。
+		///  - ≠0: 方法调用失败。错误码详见 \ref agora_rtm.LEAVE_CHANNEL_ERR "LEAVE_CHANNEL_ERR"。
 		/// </returns>
 		public int Leave() {
 			if (_rtmChannelPtr == IntPtr.Zero)
@@ -60,13 +60,16 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Agora does not recommend using this method to send a channel message. Use sendMessage instead.
-		/// If this method call succeeds:
-		/// The onSendMessageResult callback returns the result.
-		/// All remote users in the channel receive the onMessageReceived callback.
+		/// 我们不推荐使用该方法发送频道消息。请改用它的重载方法 \ref agora_rtm.RtmChannel.SendMessage(IMessage message,SendMessageOptions options) "SendMessage"。
+		/// 方法调用成功：
+		/// - 本地用户收到回调 \ref agora_rtm.RtmClientEventHandler.OnSendMessageResultHandler "OnSendMessageResultHandler"。
+		/// - 所有远端用户收到回调 \ref agora_rtm.RtmChannelEventHandler.OnMessageReceivedHandler "OnMessageReceivedHandler"。
 		/// </summary>
-		/// <param name="message">The message to be sent.</param>
-		/// <returns></returns>
+		/// <param name="message">发送的消息。 详见 \ref agora_rtm.IMessage "IMessage"。</param>
+		/// <returns>
+		///  - 0: 方法调用成功。
+		///  - ≠0: 方法调用失败。错误码详见 \ref agora_rtm.CHANNEL_MESSAGE_ERR_CODE "CHANNEL_MESSAGE_ERR_CODE"。
+		/// </returns>
 		public int SendMessage(IMessage message) {
 			if (_rtmChannelPtr == IntPtr.Zero || message.GetPtr() == IntPtr.Zero)
 			{
@@ -77,14 +80,18 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Allows a channel member to send a message to all members in the channel.
-		/// If this method call succeeds:
-		/// The onSendMessageResult callback returns the result.
-		/// All remote users in the channel receive the onMessageReceived callback.
+		/// 供频道成员向所在频道发送频道消息。
+		/// 方法调用成功：
+		/// - 本地用户收到回调 \ref agora_rtm.RtmClientEventHandler.OnSendMessageResultHandler "OnSendMessageResultHandler"。
+		/// - 所有远端用户收到回调 \ref agora_rtm.RtmChannelEventHandler.OnMessageReceivedHandler "OnMessageReceivedHandler"。
+		/// @note 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
 		/// </summary>
-		/// <param name="message">The message to be sent.</param>
-		/// <param name="options">Options when sending the channel message.</param>
-		/// <returns></returns>
+		/// <param name="message">发送的消息。详见 \ref agora_rtm.IMessage "IMessage"。</param>
+		/// <param name="options">消息发送选项。详见 \ref agora_rtm.SendMessageOptions "SendMessageOptions"。</param>
+		/// <returns>
+		///  - 0: 方法调用成功。
+		///  - ≠0: 方法调用失败。错误码详见 \ref agora_rtm.CHANNEL_MESSAGE_ERR_CODE "CHANNEL_MESSAGE_ERR_CODE"。
+		/// </returns>
 		public int SendMessage(IMessage message, SendMessageOptions options)
 		{
 			if (_rtmChannelPtr == IntPtr.Zero || message.GetPtr() == IntPtr.Zero)
@@ -96,9 +103,9 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Retrieves the channel ID.
+		/// 获取当前频道 ID。
 		/// </summary>
-		/// <returns>The channel ID of the channel.</returns>
+		/// <returns>当前频道 ID。</returns>
 		public int GetId() {
 			if (_rtmChannelPtr == IntPtr.Zero)
 			{
@@ -109,12 +116,13 @@ namespace agora_rtm {
 		}
 
 		/// <summary>
-		/// Retrieves a member list of the channel.
-		/// The onGetMembers callback returns the result of this method call.
+		/// 获取频道成员列表。
+		/// SDK 通过 #OnGetMembers 回调返回该方法的调用结果（频道成员列表）。	
+		/// @note 该方法的调用频率上限为每 2 秒 5 次。该方法最多获取 512 个频道成员。如果频道成员数量超过 512，该方法会随机返回其中的 512 个成员。
 		/// </summary>
 		/// <returns>
-		/// 0: Success.
-		/// ≠0: Failure. 
+		///  - 0: 方法调用成功。
+		///  - ≠0: 方法调用失败。错误码详见 \ref agora_rtm.GET_MEMBERS_ERR "GET_MEMBERS_ERR" 。
 		/// </returns>
 		public int GetMembers() {
 			if (_rtmChannelPtr == IntPtr.Zero)
@@ -125,7 +133,10 @@ namespace agora_rtm {
 			return channel_getMembers(_rtmChannelPtr);
 		}
 
- 		public void Dispose() {
+ 		/// <summary>
+		/// 释放当前 #RtmChannel 实例使用的所有资源。
+		/// </summary>
+		public void Dispose() {
 			 Dispose(true);
 			 GC.SuppressFinalize(this);
 		}
@@ -138,9 +149,6 @@ namespace agora_rtm {
 			Debug.Log("RtmChannel Dispose");
 		}
 
-		/// <summary>
-		/// Releases all resources used by the RtmChannel instance.
-		/// </summary>
 		private void Release() {
 			if (_rtmChannelPtr == IntPtr.Zero)
 			{
