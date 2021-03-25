@@ -232,11 +232,7 @@ namespace agora_rtm {
 		/// - 如果上传图片的格式为 JPG、JPEG、BMP，或 PNG，SDK 会自动计算图片的宽和高。你可以通过调用本方法直接获取图片的高度。
 		/// - 用户通过调用 #SetHeight 方法自行设置的图片高度会覆盖由 SDK 计算得出的图片高度。
 		/// </summary>
-<<<<<<< HEAD
 		/// <returns>上传图片的高度。</returns>
-=======
-		/// <returns>The height of the uploaded image.</returns>
->>>>>>> stream/master
         public int GetHeight() {
 			if (_MessageFlag == MESSAGE_FLAG.RECEIVE)
 				return _Height;
