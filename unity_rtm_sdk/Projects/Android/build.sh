@@ -1,8 +1,60 @@
 #!/bin/bash
+## ==============================================================================
+## build script for RTM plugin for Android on Unity
+##
+## required environmental variables:
+##   $RTM_VERSION
+## ==============================================================================
+PLATFORM="Android"
+
+function download_library {
+    DOWNLOAD_URL="https://download.agora.io/rtmsdk/release"
+    DOWNLOAD_FILE="Agora_RTM_SDK_for_Android_Unity_${RTM_VERSION}.zip"
+    
+    if [[ ! -e $DOWNLOAD_FILE ]]; then
+        wget $DOWNLOAD_URL/$DOWNLOAD_FILE
+    fi
+    #unzip
+    unzip -o $DOWNLOAD_FILE
+}
+
+function make_unity_plugin {
+    rm -rf sdk
+
+    SDKDIR="sdk/AgoraRtmEngineKit.plugin"
+    mkdir -p $SDKDIR/libs
+    cp AndroidManifest.xml $SDKDIR
+    cp project.properties $SDKDIR
+    cp -a bin/arm64-v8a $SDKDIR/libs
+    cp -a bin/armeabi-v7a $SDKDIR/libs
+    cp -a bin/x86 $SDKDIR/libs
+}
+
+function Clean {
+    if [ -e prebuilt ]; then
+	echo "clean ndk lib build..."
+	ndk-build -C jni/ clean 
+    fi
+    echo "removing Android build intermitten files..."
+    rm -rf sdk *.zip Agora_RTM_SDK_for_$PLATFORM 
+    rm -rf obj libs bin prebuilt 
+}
+
+
+if [ "$1" == "clean" ]; then
+    Clean
+    exit 0
+fi
+
+# We will require the setting of RTM_VERSION environmental variable
+if [ -z ${RTM_VERSION+x} ]; then
+    echo "ERROR, environment variable RTM_VERSION (e.g. 'v1_4_2') must be set!"
+    exit 1
+    else echo "$PLATFORM RTM_VERSION = $RTM_VERSION"
+fi
+
 #download
-wget https://download.agora.io/rtmsdk/release/Agora_RTM_SDK_for_Android_Unity_v1_4_2.zip
-#unzip
-unzip -o Agora_RTM_SDK_for_Android_Unity_v1_4_2.zip
+download_library
 mkdir prebuilt
 cp -r Agora_RTM_SDK_for_Android/libs/* prebuilt/
 
@@ -27,13 +79,13 @@ cp -r prebuilt/ bin/ || exit 1
 cp -r libs/ bin/ || exit 1
 cp AndroidManifest.xml bin/example-AndroidManifest.xml || exit 1
 
-rm -rf sdk/
-cp -r bin/arm64-v8a/ sdk/arm64-v8a/
-cp -r bin/armeabi-v7a/ sdk/armeabi-v7a/
-cp -r bin/x86/ sdk/x86/
+# sdk
+make_unity_plugin
 
 echo "------ FINISHED --------"
 echo "#cp -r bin/ /Users/Shared/Agora/apps/Unity3D/VideoTexture/Assets/Plugins/Android/libs"
+echo
+echo "Success! => Android RTM plugin is created in $PWD/sdk"
 exit 0
 
 
