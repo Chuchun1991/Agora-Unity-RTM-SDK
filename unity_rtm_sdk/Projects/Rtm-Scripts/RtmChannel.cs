@@ -117,7 +117,7 @@ namespace agora_rtm {
 
 		/// <summary>
 		/// 获取频道成员列表。
-		/// SDK 通过 #OnGetMembers 回调返回该方法的调用结果（频道成员列表）。	
+		/// SDK 通过 \ref agora_rtm.RtmChannelEventHandler.OnGetMembersHandler "OnGetMembersHandler" 回调返回该方法的调用结果（频道成员列表）。	
 		/// @note 该方法的调用频率上限为每 2 秒 5 次。该方法最多获取 512 个频道成员。如果频道成员数量超过 512，该方法会随机返回其中的 512 个成员。
 		/// </summary>
 		/// <returns>

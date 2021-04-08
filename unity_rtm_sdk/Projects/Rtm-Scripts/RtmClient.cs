@@ -787,7 +787,7 @@ namespace agora_rtm {
         /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnClearChannelAttributesResultHandler "OnClearChannelAttributesResultHandler" 回调返回方法调用结果。
         /// @note
         ///  - 你无需加入指定频道即可删除该频道属性。
-        ///  - #SetChannelAttributes 、 #DeleteChannelAttributesByKeys 和 #ClearChannelAttributes 一并计算在内：调用频率上限为每 5 秒 10 次。
+        ///  - #DeleteChannelAttributesByKeys 和 #ClearChannelAttributes 一并计算在内：调用频率上限为每 5 秒 10 次。
         /// </summary>
         /// <param name="channelId">该指定频道的频道 ID。</param>
         /// <param name="enableNotificationToChannelMembers">指示是否将通道属性更改通知所有通道成员。</param>

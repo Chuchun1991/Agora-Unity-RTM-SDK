@@ -63,8 +63,8 @@ namespace agora_rtm {
 		public delegate void OnFileMessageReceivedHandler(int id, string userId, FileMessage message);
         
 		/// <summary>
-		/// 报告 #SendMessage 方法的调用结果。
-	    /// 本地用户调用 #SendMessage 方法成功发送频道消息后：
+		/// 报告 \ref agora_rtm.RtmChannel.SendMessage "SendMessage" 方法的调用结果。
+	    /// 本地用户调用 \ref agora_rtm.RtmChannel.SendMessage "SendMessage" 方法成功发送频道消息后：
 		/// - SDK 触发此回调；
 		/// - 频道内所有远端用户收到 #OnMessageReceived 回调。
 		/// </summary>

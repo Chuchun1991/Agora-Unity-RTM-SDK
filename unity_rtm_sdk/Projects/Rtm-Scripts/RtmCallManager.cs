@@ -85,16 +85,11 @@ namespace agora_rtm {
 		/// <summary>
 		/// 取消给被叫的呼叫邀请。
 		/// </summary>
-<<<<<<< HEAD
 		/// <param name="invitation">一个 \ref agora_rtm.LocalInvitation "LocalInvitation" 对象。</param>
 		/// <returns>
 	    ///  - 0: 方法调用成功。
         ///  - ≠0: 方法调用失败。详见 #INVITATION_API_CALL_ERR_CODE 。
 		/// </returns>
-=======
-		/// <param name="invitation">An LocalCallInvitation object.</param>
-		/// <returns></returns>
->>>>>>> stream/master
 		public int CancelLocalInvitation(LocalInvitation invitation) {
 			if (_rtmCallManagerPtr == IntPtr.Zero) 
 			{
