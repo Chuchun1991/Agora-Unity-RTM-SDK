@@ -184,7 +184,7 @@ namespace agora_rtm {
         /// @note 
         ///   - 目前我们只为每个接收端保存 200 条离线消息最长七天。当保存的离线消息超出限制时，最老的信息将会被最新的消息替换。
         ///   - 本方法可与老信令 SDK 的 endCall 方法兼容。你只需在用本方法发送文本消息时将消息头设为 `GORA_RTM_ENDCALL_PREFIX_\<channelId\>_\<your additional information\>` 格式即可。请以 endCall 对应频道的 ID 替换 `\<channelId\>， \<your additional information\>` 为附加文本信息。附加文本信息中不可使用下划线 "_" ，附加文本信息可以设为空字符串 ""。
-        ///   - 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
+        ///   - 单个 SDK 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
         /// </summary>
         /// <param name="peerId">
         ///   - 接收者的用户 ID。该字符串不可超过 64 字节。不可设为空、null 或 "null"。以下为支持的字符集范围:
@@ -218,7 +218,7 @@ namespace agora_rtm {
         /// - 我们不推荐使用该方法发送点对点消息。请改用它的重载方法 #SendMessageToPeer 发送点对点消息或点对点的离线消息。
         /// - \ref agora_rtm.RtmClientEventHandler.OnSendMessageResultHandler "OnSendMessageResultHandler" 向发送者返回方法调用的结果。
         /// - 消息到达接收方后，接收者收到回调 \ref agora_rtm.RtmClientEventHandler.OnMessageReceivedFromPeerHandler "OnMessageReceivedFromPeerHandler"。
-        /// @note 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
+        /// @note 单个 SDK 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
         /// </summary>
         /// <param name="peerId">
         /// 接收者的用户 ID。
@@ -582,7 +582,7 @@ namespace agora_rtm {
         /// @note 调用频率上限为每 5 秒 10 次.
         /// SDK 将通过 \ref agora_rtm.RtmClientEventHandler.OnQueryPeersOnlineStatusResultHandler "OnQueryPeersOnlineStatusResultHandler" 回调返回方法调用结果。
         /// </summary>
-        /// <param name="peerIds">用户 ID 列表。</param>
+        /// <param name="peerIds">用户 ID 列表。支持 ID 数量上限为 256 。</param>
         /// <param name="requestId">标识本次请求的的唯一 ID。</param>
         /// <returns>
         ///  - 0: 方法调用成功。
@@ -662,6 +662,7 @@ namespace agora_rtm {
 
         /// <summary>
         /// 设置 SDK 输出的单个日志文件的大小，单位为 KB。 SDK 设有 2 个大小相同的日志文件。
+        /// @note 该方法为全局调用，如果多个实例调用该方法，则最后一个调用的方法生效。
         /// </summary>
         /// <param name="fileSizeInKBytes">SDK 输出的单个日志文件的大小，单位为 KB。默认值为 10240 (KB)。取值范围为 [512 KB, 1 GB]。</param>
         /// <returns>
@@ -680,6 +681,7 @@ namespace agora_rtm {
         /// <summary>
         /// 设置日志输出等级。
         /// 设置 SDK 的输出日志输出等级。不同的输出等级可以单独或组合使用。日志级别顺序依次为 `OFF`、`CRITICAL`、`ERROR`、`WARNING` 和 `INFO`。选择一个级别，你就可以看到在该级别之前所有级别的日志信息。例如，你选择 `WARNING` 级别，就可以看到在 `CRITICAL`、`ERROR` 和 `WARNING` 级别上的所有日志信息。
+        /// @note 该方法为全局调用，如果多个实例调用该方法，则最后一个调用的方法生效。
         /// </summary>
         /// <param name="fileter">日志输出等级。</param>
         /// <returns>
@@ -700,6 +702,7 @@ namespace agora_rtm {
         /// @note 
         ///  - 请确保指定的路径可写。
         ///  - 如需调用本方法，请在调用 \ref agora_rtm.RtmClient.RtmClient "RtmClient" 方法创建 \ref agora_rtm.RtmClient "RtmClient" 实例后立即调用，否则会造成输出日志不完整。
+        ///  - 该方法为全局调用，如果多个实例调用该方法，则最后一个调用的方法生效。
         /// 
         /// </summary>
         /// <param name="logFilePath">

@@ -84,7 +84,7 @@ namespace agora_rtm {
 		/// 方法调用成功：
 		/// - 本地用户收到回调 \ref agora_rtm.RtmClientEventHandler.OnSendMessageResultHandler "OnSendMessageResultHandler"。
 		/// - 所有远端用户收到回调 \ref agora_rtm.RtmChannelEventHandler.OnMessageReceivedHandler "OnMessageReceivedHandler"。
-		/// @note 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
+		/// @note 单个 SDK 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
 		/// </summary>
 		/// <param name="message">发送的消息。详见 \ref agora_rtm.IMessage "IMessage"。</param>
 		/// <param name="options">消息发送选项。详见 \ref agora_rtm.SendMessageOptions "SendMessageOptions"。</param>

@@ -475,7 +475,7 @@ namespace agora_rtm {
       CHANNEL_MESSAGE_ERR_SENT_TIMEOUT = 2,
         
       /**
-       3: 发送消息（点对点消息和频道消息一并计算在内）超过每 3 秒 180 次的上限。
+       3: 单个 SDK 发送消息（点对点消息和频道消息一并计算在内）超过每 3 秒 180 次的上限。
       CHANNEL_MESSAGE_ERR_TOO_OFTEN = 3,
        */
         

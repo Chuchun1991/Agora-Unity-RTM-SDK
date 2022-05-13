@@ -185,19 +185,19 @@ namespace agora_rtm {
 		/// <param name="errorCode">错误码。详见 \ref agora_rtm.QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR "QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR"。</param>
 		public delegate void OnQueryPeersBySubscriptionOptionResultHandler(int id, Int64 requestId, string[] peerIds, int peerCount, QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR errorCode);
 		
-		/// @cond not-for-doc
+	
 		/// <param name="id">引擎 ID</param>
 		/// <param name="requestId">标识本次请求的的唯一 ID。</param>
 		/// <param name="errorCode">错误码。详见 \ref agora_rtm.ATTRIBUTE_OPERATION_ERR "ATTRIBUTE_OPERATION_ERR".</param>
 		public delegate void OnSetLocalUserAttributesResultHandler(int id, Int64 requestId, ATTRIBUTE_OPERATION_ERR errorCode);
-		/// @endcond
+
 		
-		/// @cond not-for-doc
+
 		/// <param name="id">引擎 ID</param>
 		/// <param name="requestId">标识本次请求的的唯一 ID。</param>
 		/// <param name="errorCode">错误码。详见 \ref agora_rtm.ATTRIBUTE_OPERATION_ERR "ATTRIBUTE_OPERATION_ERR"。</param>
 		public delegate void OnAddOrUpdateLocalUserAttributesResultHandler(int id, Int64 requestId, ATTRIBUTE_OPERATION_ERR errorCode);
-		/// @endcond
+	
 		
 		/// <summary>
 		/// 报告 \ref agora_rtm.RtmClient.DeleteLocalUserAttributesByKeys "DeleteLocalUserAttributesByKeys" 方法的调用结果。
@@ -234,12 +234,12 @@ namespace agora_rtm {
 		/// <param name="errorCode">错误码。详见 \ref agora_rtm.ATTRIBUTE_OPERATION_ERR "ATTRIBUTE_OPERATION_ERR"。</param>
 		public delegate void OnSetChannelAttributesResultHandler(int id, Int64 requestId, ATTRIBUTE_OPERATION_ERR errorCode);
 		
-		/// @cond not-for-doc
+	
 		/// <param name="id">引擎 ID</param>
 		/// <param name="requestId">标识本次请求的的唯一 ID。</param>
 		/// <param name="errorCode">错误码。</param>
 		public delegate void OnAddOrUpdateChannelAttributesResultHandler(int id, Int64 requestId, ATTRIBUTE_OPERATION_ERR errorCode);
-		/// @endcond
+
 		
 		/// <summary>
 		/// 报告 \ref agora_rtm.RtmClient.DeleteChannelAttributesByKeys "DeleteChannelAttributesByKeys" 方法的调用结果。
@@ -287,7 +287,8 @@ namespace agora_rtm {
 		/// <param name="peersStatus">用户在线状态列表。详见 \ref agora_rtm.PeerOnlineStatus "PeerOnlineStatus"。</param>
 		/// <param name="peerCount">在线状态发生变化的被订阅用户人数。</param>
 		public delegate void OnPeersOnlineStatusChangedHandler(int id, PeerOnlineStatus[] peersStatus, int peerCount);
-
+        
+	
 		public OnLoginSuccessHandler OnLoginSuccess;
 		public OnLoginFailureHandler OnLoginFailure;
 		public OnRenewTokenResultHandler OnRenewTokenResult;
