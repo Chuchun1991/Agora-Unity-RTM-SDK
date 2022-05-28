@@ -6,7 +6,7 @@ using System;
 using AOT;
 
 namespace agora_rtm {
-    public sealed class RtmClient : IRtmApiNative, IDisposable {
+    public sealed class RtmClient : IDisposable {
         private Dictionary<string, RtmChannel> channelDic = new Dictionary<string, RtmChannel>();
         private List<RtmChannelAttribute> attributeList = new List<RtmChannelAttribute>();
         private IntPtr _rtmServicePtr = IntPtr.Zero;
@@ -29,9 +29,9 @@ namespace agora_rtm {
                 return;
             }
             AgoraCallbackObject.GetInstance();
-            _rtmServicePtr = createRtmService_rtm();
+            _rtmServicePtr = IRtmApiNative.createRtmService_rtm();
             _eventHandler = eventHandler;
-            int ret = initialize_rtm(_rtmServicePtr, appId, eventHandler.GetRtmClientEventHandlerPtr());
+            int ret = IRtmApiNative.initialize_rtm(_rtmServicePtr, appId, eventHandler.GetPtr());
             if (ret != 0) {
                 Debug.LogError("RtmClient create fail, error:  " + ret);
             }
@@ -78,7 +78,7 @@ namespace agora_rtm {
                 _rtmCallManager = null;
             }
 
-            release_rtm(_rtmServicePtr, sync);
+            IRtmApiNative.release_rtm(_rtmServicePtr, sync);
             _rtmServicePtr = IntPtr.Zero;
             _eventHandler.Release();
             _eventHandler = null;
@@ -91,7 +91,7 @@ namespace agora_rtm {
         /// String 格式的 Agora RTM SDK 的版本信息。比如：1.0.0。
         /// </returns>
         public static string GetSdkVersion() {
-            IntPtr sdkVersion = _getRtmSdkVersion_rtm();
+            IntPtr sdkVersion = IRtmApiNative._getRtmSdkVersion_rtm();
             if (!ReferenceEquals(sdkVersion, IntPtr.Zero)) {
 				return Marshal.PtrToStringAnsi(sdkVersion);
 			} else {
@@ -136,7 +136,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return login_rtm(_rtmServicePtr, token, userId);
+            return IRtmApiNative.login_rtm(_rtmServicePtr, token, userId);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return logout_rtm(_rtmServicePtr);
+            return IRtmApiNative.logout_rtm(_rtmServicePtr);
         }
         
         /// <summary>
@@ -173,18 +173,16 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return renewToken_rtm(_rtmServicePtr, token);
+            return IRtmApiNative.renewToken_rtm(_rtmServicePtr, token);
         }
 
         /// <summary>
-        /// 向指定用户（接收者）发送点对点消息或点对点的离线消息。
+        /// 向指定用户（接收者）发送点对点消息。
         /// - \ref agora_rtm.RtmChannelEventHandler.OnSendMessageResultHandler "OnSendMessageResultHandler" 向发送者返回方法调用的结果。
         /// - 消息到达接收方后，接收者收到回调 \ref agora_rtm.RtmClientEventHandler.OnMessageReceivedFromPeerHandler "OnMessageReceivedFromPeerHandler"。
-        /// - 该方法允许你向离线用户发送点对点消息。如果指定用户在你发送离线消息时不在线，消息服务器会保存该条消息。
         /// @note 
-        ///   - 目前我们只为每个接收端保存 200 条离线消息最长七天。当保存的离线消息超出限制时，最老的信息将会被最新的消息替换。
         ///   - 本方法可与老信令 SDK 的 endCall 方法兼容。你只需在用本方法发送文本消息时将消息头设为 `GORA_RTM_ENDCALL_PREFIX_\<channelId\>_\<your additional information\>` 格式即可。请以 endCall 对应频道的 ID 替换 `\<channelId\>， \<your additional information\>` 为附加文本信息。附加文本信息中不可使用下划线 "_" ，附加文本信息可以设为空字符串 ""。
-        ///   - 单个 SDK 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
+        ///   - 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
         /// </summary>
         /// <param name="peerId">
         ///   - 接收者的用户 ID。该字符串不可超过 64 字节。不可设为空、null 或 "null"。以下为支持的字符集范围:
@@ -210,7 +208,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return sendMessageToPeer_rtm(_rtmServicePtr, peerId, message.GetPtr(), options.enableOfflineMessaging, options.enableHistoricalMessaging);
+            return IRtmApiNative.sendMessageToPeer_rtm(_rtmServicePtr, peerId, message.GetPtr(), options.enableOfflineMessaging, options.enableHistoricalMessaging);
         }
 
         /// <summary>
@@ -218,7 +216,7 @@ namespace agora_rtm {
         /// - 我们不推荐使用该方法发送点对点消息。请改用它的重载方法 #SendMessageToPeer 发送点对点消息或点对点的离线消息。
         /// - \ref agora_rtm.RtmClientEventHandler.OnSendMessageResultHandler "OnSendMessageResultHandler" 向发送者返回方法调用的结果。
         /// - 消息到达接收方后，接收者收到回调 \ref agora_rtm.RtmClientEventHandler.OnMessageReceivedFromPeerHandler "OnMessageReceivedFromPeerHandler"。
-        /// @note 单个 SDK 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
+        /// @note 发送消息（包括点对点消息和频道消息）的调用频率上限为每 3 秒 180 次。
         /// </summary>
         /// <param name="peerId">
         /// 接收者的用户 ID。
@@ -236,11 +234,13 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return sendMessageToPeer2_rtm(_rtmServicePtr, peerId, message.GetPtr());
+            return IRtmApiNative.sendMessageToPeer2_rtm(_rtmServicePtr, peerId, message.GetPtr());
         }
 
         /// <summary>
         /// 通过 media ID 从 Agora 服务器下载文件或图片至本地内存。
+        /// @deprecated 该方法已废弃，Agora 建议你不要使用。
+        ///
         /// 方法调用结果由 SDK 通过 \ref agora_rtm.RtmClientEventHandler.OnMediaDownloadToMemoryResultHandler "OnMediaDownloadToMemoryResultHandler" 回调返回。
         /// @note
         /// - 该方法适用于需要快速读取下载文件或图片的场景。
@@ -254,7 +254,7 @@ namespace agora_rtm {
         /// </param>
         /// <returns>
         ///  - 0: 方法调用成功。
-        ///  - ≠0: 方法调用失败。详见 #DOWNLOAD_MEDIA_ERR_CODE.
+        ///  - ≠0: 方法调用失败。详见 #DOWNLOAD_MEDIA_ERR_CODE。
         /// </returns>
         public int DownloadMediaToMemory(string mediaId, Int64 requestId) {
             if (_rtmServicePtr == IntPtr.Zero)
@@ -262,11 +262,13 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return downloadMediaToMemory_rtm(_rtmServicePtr, mediaId, requestId);
+            return IRtmApiNative.downloadMediaToMemory_rtm(_rtmServicePtr, mediaId, requestId);
         }
 
         /// <summary>
         /// 通过 media ID 从 Agora 服务器下载文件或图片至本地指定地址。
+        /// @deprecated 该方法已废弃，Agora 建议你不要使用。
+        ///
         /// 方法调用结果由 SDK 通过 \ref agora_rtm.RtmClientEventHandler.OnMediaDownloadToFileResultHandler "OnMediaDownloadToFileResultHandler" 回调返回。
         /// </summary>
         /// <param name="mediaId">服务器上待下载的文件或图片对应的 media ID。</param>
@@ -282,11 +284,13 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return downloadMediaToFile_rtm(_rtmServicePtr, mediaId, filePath, requestId);
+            return IRtmApiNative.downloadMediaToFile_rtm(_rtmServicePtr, mediaId, filePath, requestId);
         }
 
         /// <summary>
         /// 通过 request ID 取消一个正在进行中的文件或图片下载任务。
+        /// @deprecated 该方法已废弃，Agora 建议你不要使用。
+        ///
         /// 方法调用结果由 SDK 通过 \ref agora_rtm.RtmClientEventHandler.OnMediaCancelResultHandler "OnMediaCancelResultHandler" 回调返回。
         /// @note 你只能取消一个正在进行中的下载任务。下载任务完成后则无法取消下载任务，因为相应的 request ID 已不再有效。
         /// </summary>
@@ -303,11 +307,13 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return cancelMediaDownload_rtm(_rtmServicePtr, requestId);
+            return IRtmApiNative.cancelMediaDownload_rtm(_rtmServicePtr, requestId);
         }
 
         /// <summary>
         /// 通过 request ID 取消一个正在进行中的文件或图片上传任务。
+        /// @deprecated 该方法已废弃，Agora 建议你不要使用。
+        ///
         /// 方法调用结果由 SDK 通过 \ref agora_rtm.RtmClientEventHandler.OnMediaCancelResultHandler "OnMediaCancelResultHandler" 回调返回。
         /// @note 你只能取消一个正在进行中的上传任务。上传任务完成后则无法取消上传任务，因为相应的 request ID 已不再有效。
         /// </summary>
@@ -324,7 +330,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return cancelMediaUpload_rtm(_rtmServicePtr, requestId);
+            return IRtmApiNative.cancelMediaUpload_rtm(_rtmServicePtr, requestId);
         }
 
         /// <summary>
@@ -362,7 +368,7 @@ namespace agora_rtm {
                 }
             }
             
-            IntPtr _rtmChannelPtr = createChannel_rtm(_rtmServicePtr, channelId, rtmChannelEventHandler.GetChannelEventHandlerPtr());
+            IntPtr _rtmChannelPtr = IRtmApiNative.createChannel_rtm(_rtmServicePtr, channelId, rtmChannelEventHandler.GetPtr());
             RtmChannel channel = new RtmChannel(_rtmChannelPtr, rtmChannelEventHandler);
             channelDic.Add(channelId, channel);
             return channel;
@@ -384,8 +390,8 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return null;
 			}
-            IntPtr _MessagePtr = createMessage4_rtm(_rtmServicePtr);
-            return new TextMessage(_MessagePtr, TextMessage.MESSAGE_FLAG.SEND);
+            IntPtr _MessagePtr = IRtmApiNative.createMessage4_rtm(_rtmServicePtr);
+            return new TextMessage(_MessagePtr, MESSAGE_FLAG.SEND);
         }
 
         /// <summary>
@@ -404,8 +410,8 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return null;
 			}
-            IntPtr _MessagePtr = createMessage3_rtm(_rtmServicePtr, text);
-            return new TextMessage(_MessagePtr, TextMessage.MESSAGE_FLAG.SEND);
+            IntPtr _MessagePtr = IRtmApiNative.createMessage3_rtm(_rtmServicePtr, text);
+            return new TextMessage(_MessagePtr, MESSAGE_FLAG.SEND);
         }
 
         /// <summary>
@@ -425,8 +431,8 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return null;
 			}
-            IntPtr _MessagePtr = createMessage2_rtm(_rtmServicePtr, rawData, rawData.Length);
-            return new TextMessage(_MessagePtr, TextMessage.MESSAGE_FLAG.SEND);
+            IntPtr _MessagePtr = IRtmApiNative.createMessage2_rtm(_rtmServicePtr, rawData, rawData.Length);
+            return new TextMessage(_MessagePtr, MESSAGE_FLAG.SEND);
         }
         
         /// <summary>
@@ -446,12 +452,14 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return null;
 			}
-            IntPtr _MessagePtr = createMessage_rtm(_rtmServicePtr, rawData, rawData.Length, description);
-            return new TextMessage(_MessagePtr, TextMessage.MESSAGE_FLAG.SEND);
+            IntPtr _MessagePtr = IRtmApiNative.createMessage_rtm(_rtmServicePtr, rawData, rawData.Length, description);
+            return new TextMessage(_MessagePtr, MESSAGE_FLAG.SEND);
         }
 
         /// <summary>
         /// 通过 media ID 创建一个 \ref agora_rtm.ImageMessage "ImageMessage" 实例。
+        /// @deprecated 该方法已废弃，Agora 建议你不要使用。
+        ///
         /// - 如果你已经有了一个保存在 Agora 服务器上的图片对应的 media ID，你可以调用本方法创建一个 \ref agora_rtm.ImageMessage "ImageMessage" 实例。
         /// - 如果你没有相应的 media ID，那么你必须通过调用 #CreateImageMessageByUploading 方法上传相应的文件到 Agora 服务器来获得一个对应的 \ref agora_rtm.ImageMessage "ImageMessage" 实例。
         /// </summary>
@@ -465,12 +473,14 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return null;
 			}
-            IntPtr _MessagePtr = createImageMessageByMediaId_rtm(_rtmServicePtr, mediaId);
-            return new ImageMessage(_MessagePtr, ImageMessage.MESSAGE_FLAG.SEND);
+            IntPtr _MessagePtr = IRtmApiNative.createImageMessageByMediaId_rtm(_rtmServicePtr, mediaId);
+            return new ImageMessage(_MessagePtr, MESSAGE_FLAG.SEND);
         }
 
         /// <summary>
         /// 上传一个图片到 Agora 服务器以获取一个相应的 \ref agora_rtm.ImageMessage "ImageMessage" 图片消息实例。
+        /// @deprecated 该方法已废弃，Agora 建议你不要使用。
+        ///
         /// SDK 会通过 \ref agora_rtm.RtmClientEventHandler.OnImageMediaUploadResultHandler "OnImageMediaUploadResultHandler" 回调返回方法的调用结果。如果方法调用成功，该回调返回一个对应的 \ref agora_rtm.ImageMessage "ImageMessage" 实例。
         /// - 如果上传图片为 JPEG、JPG、BMP，或 PNG 格式，SDK 会自动计算上传图片的宽和高。你可以通过调用 \ref agora_rtm.ImageMessage.GetWidth "GetWidth" 方法获取计算出的宽。
         /// - 如果上传图片为其他格式，你需要调用 \ref agora_rtm.ImageMessage.SetWidth "SetWidth" 和 \ref agora_rtm.ImageMessage.SetHeight "SetHeight" 方法自行设置上传图片的宽和高。
@@ -490,10 +500,12 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
             }
-            return createImageMessageByUploading_rtm(_rtmServicePtr, filePath, requestId);
+            return IRtmApiNative.createImageMessageByUploading_rtm(_rtmServicePtr, filePath, requestId);
         }
 
         /// <summary>
+        /// @deprecated 该方法已废弃，Agora 建议你不要使用。
+        ///
         /// 通过 media ID 创建一个 \ref agora_rtm.FileMessage "FileMessage" 实例。
         /// - 如果你已经有了一个保存在 Agora 服务器上的文件对应的 media ID，你可以调用本方法创建一个 \ref agora_rtm.FileMessage "FileMessage" 实例。
         /// - 如果你没有相应的 media ID，那么你必须通过调用 #CreateFileMessageByUploading 方法上传相应的文件到 Agora 服务器来获得一个对应的 \ref agora_rtm.FileMessage "FileMessage" 实例。
@@ -510,12 +522,14 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return null;
 			}
-            IntPtr _MessagePtr = createFileMessageByMediaId_rtm(_rtmServicePtr, mediaId);
-            return new FileMessage(_MessagePtr, FileMessage.MESSAGE_FLAG.SEND);
+            IntPtr _MessagePtr = IRtmApiNative.createFileMessageByMediaId_rtm(_rtmServicePtr, mediaId);
+            return new FileMessage(_MessagePtr, MESSAGE_FLAG.SEND);
         }
 
         /// <summary>
         /// 上传一个文件到 Agora 服务器以获取一个相应的 \ref agora_rtm.FileMessage "FileMessage" 文件消息实例。
+        /// @deprecated 该方法已废弃，Agora 建议你不要使用。
+        ///
         /// SDK 会通过 \ref agora_rtm.RtmClientEventHandler.OnFileMediaUploadResultHandler "OnFileMediaUploadResultHandler" 回调返回方法的调用结果。如果方法调用成功，该回调返回一个对应的 \ref agora_rtm.FileMessage "FileMessage" 实例。
         /// </summary>
         /// <param name="filePath">
@@ -534,7 +548,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return createFileMessageByUploading_rtm(_rtmServicePtr, filePath, requestId);
+            return IRtmApiNative.createFileMessageByUploading_rtm(_rtmServicePtr, filePath, requestId);
         }
 
         /// <summary>
@@ -549,7 +563,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return null;
 			}
-            IntPtr channelAttribute = createChannelAttribute_rtm(_rtmServicePtr);
+            IntPtr channelAttribute = IRtmApiNative.createChannelAttribute_rtm(_rtmServicePtr);
             RtmChannelAttribute attribute = new RtmChannelAttribute(channelAttribute);
             attributeList.Add(attribute);
             return attribute;
@@ -572,7 +586,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return setParameters_rtm(_rtmServicePtr, parameters);
+            return IRtmApiNative.setParameters_rtm(_rtmServicePtr, parameters);
         }
         
         /// <summary>
@@ -594,7 +608,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return queryPeersOnlineStatus_rtm(_rtmServicePtr, peerIds, peerIds.Length, requestId);
+            return IRtmApiNative.queryPeersOnlineStatus_rtm(_rtmServicePtr, peerIds, peerIds.Length, requestId);
         }
 
         /// <summary>
@@ -619,7 +633,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmService is null");
                 return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
             }
-            return subscribePeersOnlineStatus_rtm(_rtmServicePtr, peerIds, peerIds.Length, requestId);
+            return IRtmApiNative.subscribePeersOnlineStatus_rtm(_rtmServicePtr, peerIds, peerIds.Length, requestId);
         }
 
         /// <summary>
@@ -638,7 +652,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmService is null");
                 return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
             }
-            return unsubscribePeersOnlineStatus_rtm(_rtmServicePtr, peerIds, peerIds.Length, requestId);
+            return IRtmApiNative.unsubscribePeersOnlineStatus_rtm(_rtmServicePtr, peerIds, peerIds.Length, requestId);
         }
 
         /// <summary>
@@ -657,12 +671,11 @@ namespace agora_rtm {
                 Debug.LogError("rtmService is null");
                 return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
             }
-            return queryPeersBySubscriptionOption_rtm(_rtmServicePtr, option, requestId);
+            return IRtmApiNative.queryPeersBySubscriptionOption_rtm(_rtmServicePtr, option, requestId);
         }
 
         /// <summary>
         /// 设置 SDK 输出的单个日志文件的大小，单位为 KB。 SDK 设有 2 个大小相同的日志文件。
-        /// @note 该方法为全局调用，如果多个实例调用该方法，则最后一个调用的方法生效。
         /// </summary>
         /// <param name="fileSizeInKBytes">SDK 输出的单个日志文件的大小，单位为 KB。默认值为 10240 (KB)。取值范围为 [512 KB, 1 GB]。</param>
         /// <returns>
@@ -675,13 +688,12 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return setLogFileSize_rtm(_rtmServicePtr, fileSizeInKBytes);
+            return IRtmApiNative.setLogFileSize_rtm(_rtmServicePtr, fileSizeInKBytes);
         }
 
         /// <summary>
         /// 设置日志输出等级。
         /// 设置 SDK 的输出日志输出等级。不同的输出等级可以单独或组合使用。日志级别顺序依次为 `OFF`、`CRITICAL`、`ERROR`、`WARNING` 和 `INFO`。选择一个级别，你就可以看到在该级别之前所有级别的日志信息。例如，你选择 `WARNING` 级别，就可以看到在 `CRITICAL`、`ERROR` 和 `WARNING` 级别上的所有日志信息。
-        /// @note 该方法为全局调用，如果多个实例调用该方法，则最后一个调用的方法生效。
         /// </summary>
         /// <param name="fileter">日志输出等级。</param>
         /// <returns>
@@ -694,7 +706,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return setLogFilter_rtm(_rtmServicePtr, fileter);
+            return IRtmApiNative.setLogFilter_rtm(_rtmServicePtr, fileter);
         }
 
         /// <summary>
@@ -702,7 +714,6 @@ namespace agora_rtm {
         /// @note 
         ///  - 请确保指定的路径可写。
         ///  - 如需调用本方法，请在调用 \ref agora_rtm.RtmClient.RtmClient "RtmClient" 方法创建 \ref agora_rtm.RtmClient "RtmClient" 实例后立即调用，否则会造成输出日志不完整。
-        ///  - 该方法为全局调用，如果多个实例调用该方法，则最后一个调用的方法生效。
         /// 
         /// </summary>
         /// <param name="logFilePath">
@@ -718,7 +729,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return setLogFile_rtm(_rtmServicePtr, logFilePath);
+            return IRtmApiNative.setLogFile_rtm(_rtmServicePtr, logFilePath);
         }
 
         /// <summary>
@@ -740,7 +751,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return getChannelMemberCount_rtm(_rtmServicePtr, channelIds, channelIds.Length, requestId);
+            return IRtmApiNative.getChannelMemberCount_rtm(_rtmServicePtr, channelIds, channelIds.Length, requestId);
         }
 
         /// <summary>
@@ -763,7 +774,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return getChannelAttributesByKeys_rtm(_rtmServicePtr, channelId, attributeKeys, attributeKeys.Length, requestId);
+            return IRtmApiNative.getChannelAttributesByKeys_rtm(_rtmServicePtr, channelId, attributeKeys, attributeKeys.Length, requestId);
         }
 
         /// <summary>
@@ -782,7 +793,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
                 return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
             }
-            return getChannelAttributes_rtm(_rtmServicePtr, channelId, requestId);
+            return IRtmApiNative.getChannelAttributes_rtm(_rtmServicePtr, channelId, requestId);
         }
 
         /// <summary>
@@ -805,7 +816,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return clearChannelAttributes_rtm(_rtmServicePtr, channelId, enableNotificationToChannelMembers, requestId);
+            return IRtmApiNative.clearChannelAttributes_rtm(_rtmServicePtr, channelId, enableNotificationToChannelMembers, requestId);
         }
 
         /// <summary>
@@ -831,7 +842,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return deleteChannelAttributesByKeys_rtm(_rtmServicePtr, channelId, attributeKeys, attributeKeys.Length, enableNotificationToChannelMembers, requestId);
+            return IRtmApiNative.deleteChannelAttributesByKeys_rtm(_rtmServicePtr, channelId, attributeKeys, attributeKeys.Length, enableNotificationToChannelMembers, requestId);
         }
 
         /// <summary>
@@ -852,7 +863,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return getUserAttributesByKeys_rtm(_rtmServicePtr, userId, attributeKeys, attributeKeys.Length, requestId);
+            return IRtmApiNative.getUserAttributesByKeys_rtm(_rtmServicePtr, userId, attributeKeys, attributeKeys.Length, requestId);
         }
 
         /// <summary>
@@ -872,7 +883,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return getUserAttributes_rtm(_rtmServicePtr, userId, requestId);
+            return IRtmApiNative.getUserAttributes_rtm(_rtmServicePtr, userId, requestId);
         }
 
         /// <summary>
@@ -891,7 +902,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return clearLocalUserAttributes_rtm(_rtmServicePtr, requestId);
+            return IRtmApiNative.clearLocalUserAttributes_rtm(_rtmServicePtr, requestId);
         }
 
         /// <summary>
@@ -911,7 +922,7 @@ namespace agora_rtm {
                 Debug.LogError("rtmServicePtr is null");
 				return (int)COMMON_ERR_CODE.ERROR_NULL_PTR;
 			}
-            return deleteLocalUserAttributesByKeys_rtm(_rtmServicePtr, attributeKeys, attributeKeys.Length, requestId);
+            return IRtmApiNative.deleteLocalUserAttributesByKeys_rtm(_rtmServicePtr, attributeKeys, attributeKeys.Length, requestId);
         }
 
         /// <summary>
@@ -944,7 +955,7 @@ namespace agora_rtm {
                 for (int i = 0; i < attributes.Length; i++) {
                     attributeLists[i] = attributes[i].GetPtr().ToInt64();
                 }
-                return setChannelAttributes_rtm(_rtmServicePtr, channelId, attributeLists, attributes.Length, options.enableNotificationToChannelMembers, requestId);
+                return IRtmApiNative.setChannelAttributes_rtm(_rtmServicePtr, channelId, attributeLists, attributes.Length, options.enableNotificationToChannelMembers, requestId);
             }
             return -7;
         } 
@@ -966,7 +977,7 @@ namespace agora_rtm {
                 Debug.LogError("eventHandler is null");
                 return null;
             }
-            IntPtr rtmCallManagerPtr = getRtmCallManager_rtm(_rtmServicePtr, eventHandler.GetPtr());
+            IntPtr rtmCallManagerPtr = IRtmApiNative.getRtmCallManager_rtm(_rtmServicePtr, eventHandler.GetPtr());
             if (_rtmCallManager == null) {
                 _rtmCallManager = new RtmCallManager(rtmCallManagerPtr, eventHandler);
             }
